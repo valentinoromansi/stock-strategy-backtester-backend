@@ -1,0 +1,2 @@
+- [] GET method /strategies => Get general strategy data -> [{name, description, patternVisuals}, ...]
+- [] POST method /backtest => Get backtest data -> [{patternName, stockName, win, loss, earnedRR, risk, reward, casesAmount }, ...]
