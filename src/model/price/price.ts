@@ -12,4 +12,6 @@ export class Price {
   close: number
   high: number
   low: number
+  next: Price
+  prev: Price
 }

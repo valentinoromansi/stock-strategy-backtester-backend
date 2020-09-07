@@ -1,6 +1,7 @@
 import { ExcelExtractor } from "./data-extractor/excel-extractor"
 import IExtractor from "./data-extractor/extractor-i"
 import express from "express"
+import { getStrategies } from "./response-service/response-service"
 
 function setHeaders(res: any) {
   res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000")
@@ -13,8 +14,16 @@ function setHeaders(res: any) {
 export const app = express()
 
 const priceExtractor: IExtractor = new ExcelExtractor()
+
 // Get all strategies name, description and visual data
 app.get("/strategies", (req: any, res: any) => {
   setHeaders(res)
+  res.send(getStrategies())
+})
+
+// Get all strategies name, description and visual data
+/*app.get("/strategy....", (req: any, res: any) => {
+  setHeaders(res)
   priceExtractor.readPriceData().then((data: any) => res.send(JSON.stringify({ stocksData: data }, null, 2)))
 })
+*/

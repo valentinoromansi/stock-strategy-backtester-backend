@@ -1,7 +1,7 @@
 import csv from "csv-parser"
 import { readdir, createReadStream } from "fs"
 import { yml } from "../yml/yml"
-import { Price } from "../model/price"
+import { Price } from "../model/price/price"
 import IExtractor from "./extractor-i"
 
 export class ExcelExtractor implements IExtractor {
@@ -17,9 +17,14 @@ export class ExcelExtractor implements IExtractor {
   async extractCsvData(path: string): Promise<Price[]> {
     return new Promise((resolve, rej) => {
       let results: Price[] = []
+      let price: Price = new Price(new Date(), 0, 0, 0, 0)
       createReadStream(path)
         .pipe(csv({}))
-        .on("data", (data: Price) => results.push(data))
+        .on("data", (data: Price) => {
+          data.prev = 
+          price.next         
+          results.push(data)
+        })
         .on("end", () => {
           resolve(results)
         })
@@ -39,3 +44,6 @@ export class ExcelExtractor implements IExtractor {
     })
   }
 }
+
+
+

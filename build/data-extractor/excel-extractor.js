@@ -43,6 +43,7 @@ exports.ExcelExtractor = void 0;
 var csv_parser_1 = __importDefault(require("csv-parser"));
 var fs_1 = require("fs");
 var yml_1 = require("../yml/yml");
+var price_1 = require("../model/price/price");
 var ExcelExtractor = /** @class */ (function () {
     function ExcelExtractor() {
     }
@@ -64,9 +65,14 @@ var ExcelExtractor = /** @class */ (function () {
             return __generator(this, function (_a) {
                 return [2 /*return*/, new Promise(function (resolve, rej) {
                         var results = [];
+                        var price = new price_1.Price(new Date(), 0, 0, 0, 0);
                         fs_1.createReadStream(path)
                             .pipe(csv_parser_1.default({}))
-                            .on("data", function (data) { return results.push(data); })
+                            .on("data", function (data) {
+                            data.prev =
+                                price.next;
+                            results.push(data);
+                        })
                             .on("end", function () {
                             resolve(results);
                         });
