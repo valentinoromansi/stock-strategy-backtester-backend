@@ -5,7 +5,7 @@ export class PriceLinkedList {
   first: Price
   last: Price
 
-  append(price: Price) {
+  append(price: Price): Price {
     // first price added
     if (!this.first && !this.last) {
       this.first = this.last = price
@@ -22,6 +22,7 @@ export class PriceLinkedList {
       price.prev = this.last
       this.last = price
     }
+    return price
   }
 
   print() {
