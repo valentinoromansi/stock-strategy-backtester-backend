@@ -6,11 +6,21 @@ export class PriceLinkedList {
   last: Price
 
   append(price: Price) {
+    // first price added
     if (!this.first && !this.last) {
       this.first = this.last = price
-    } else {
-      price.prev = this.last
+    }
+    // Second added
+    else if (this.first === this.last) {
+      this.first.next = price
+      this.last = price
+      this.last.prev = this.first
+    }
+    // Append at the end if there are more then 2
+    else {
       this.last.next = price
+      price.prev = this.last
+      this.last = price
     }
   }
 

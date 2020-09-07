@@ -5,12 +5,21 @@ var PriceLinkedList = /** @class */ (function () {
     function PriceLinkedList() {
     }
     PriceLinkedList.prototype.append = function (price) {
+        // first price added
         if (!this.first && !this.last) {
             this.first = this.last = price;
         }
+        // Second added
+        else if (this.first === this.last) {
+            this.first.next = price;
+            this.last = price;
+            this.last.prev = this.first;
+        }
+        // Append at the end if there are more then 2
         else {
-            price.prev = this.last;
             this.last.next = price;
+            price.prev = this.last;
+            this.last = price;
         }
     };
     PriceLinkedList.prototype.print = function () {
@@ -40,4 +49,4 @@ list.print()
 
 let list2: PriceLinkedList = new PriceLinkedList()
 list2.print()
-*/ 
+*/

@@ -22,7 +22,7 @@ exports.app.get("/strategies", function (req, res) {
     res.send(response_service_1.getStrategies());
 });
 // Get all strategies name, description and visual data
-/*app.get("/strategy", (req: any, res: any) => {
+/*app.get("/strategy....", (req: any, res: any) => {
   setHeaders(res)
   priceExtractor.readPriceData().then((data: any) => res.send(JSON.stringify({ stocksData: data }, null, 2)))
 })
