@@ -30,23 +30,20 @@ export class Price {
     return true
   }
 
-  iter(dir: Direction, iterNum: number, onEachIter: any) {
+  executeEachIteration(dir: Direction, iterNum: number, onEachIter: (p: Price) => any) {
     if (!this.hasConnectedPrices(dir, iterNum)) return
-    ;[Array.from(Array(10).keys())].forEach(() => {
-      onEachIter()
-    })
+    let cur: Price = this
+    for (let i = 0; i <= iterNum; ++i) {
+      onEachIter(cur)
+      cur = dir == Direction.LEFT ? cur.prev : cur.next
+    }
   }
 }
 
 let prices: PriceLinkedList = new PriceLinkedList()
-prices.append(new Price(new Date(), 0, 0, 0, 0))
+
 prices.append(new Price(new Date(), 1, 1, 1, 1))
 prices.append(new Price(new Date(), 2, 2, 2, 2))
-
-console.log(prices.last.hasConnectedPrices(Direction.LEFT, 1))
-console.log(prices.last.hasConnectedPrices(Direction.LEFT, 2))
-console.log(prices.last.hasConnectedPrices(Direction.LEFT, 3))
-
-console.log(prices.first.hasConnectedPrices(Direction.RIGHT, 1))
-console.log(prices.first.hasConnectedPrices(Direction.RIGHT, 2))
-console.log(prices.first.hasConnectedPrices(Direction.RIGHT, 3))
+prices.last.executeEachIteration(Direction.LEFT, 1, (price: Price) => {
+  console.log(price.low)
+})

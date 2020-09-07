@@ -24,23 +24,21 @@ var Price = /** @class */ (function () {
         }
         return true;
     };
-    Price.prototype.iter = function (dir, iterNum, onEachIter) {
+    Price.prototype.executeEachIteration = function (dir, iterNum, onEachIter) {
         if (!this.hasConnectedPrices(dir, iterNum))
             return;
-        [Array.from(Array(10).keys())].forEach(function () {
-            onEachIter();
-        });
+        var cur = this;
+        for (var i = 0; i <= iterNum; ++i) {
+            onEachIter(cur);
+            cur = dir == direction_1.Direction.LEFT ? cur.prev : cur.next;
+        }
     };
     return Price;
 }());
 exports.Price = Price;
 var prices = new price_linked_list_1.PriceLinkedList();
-prices.append(new Price(new Date(), 0, 0, 0, 0));
 prices.append(new Price(new Date(), 1, 1, 1, 1));
 prices.append(new Price(new Date(), 2, 2, 2, 2));
-console.log(prices.last.hasConnectedPrices(direction_1.Direction.LEFT, 1));
-console.log(prices.last.hasConnectedPrices(direction_1.Direction.LEFT, 2));
-console.log(prices.last.hasConnectedPrices(direction_1.Direction.LEFT, 3));
-console.log(prices.first.hasConnectedPrices(direction_1.Direction.RIGHT, 1));
-console.log(prices.first.hasConnectedPrices(direction_1.Direction.RIGHT, 2));
-console.log(prices.first.hasConnectedPrices(direction_1.Direction.RIGHT, 3));
+prices.last.executeEachIteration(direction_1.Direction.LEFT, 1, function (price) {
+    console.log(price.low);
+});

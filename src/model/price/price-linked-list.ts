@@ -41,13 +41,3 @@ export class PriceLinkedList {
     console.log(logStr)
   }
 }
-
-/*
-let list: PriceLinkedList = new PriceLinkedList()
-list.append(new Price(new Date(), 0, 0, 0, 0))
-list.append(new Price(new Date(), 123, 0, 0, 0))
-list.print()
-
-let list2: PriceLinkedList = new PriceLinkedList()
-list2.print()
-*/
