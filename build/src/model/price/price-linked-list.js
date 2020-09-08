@@ -1,18 +1,27 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PriceLinkedList = void 0;
-var price_1 = require("./price");
 var PriceLinkedList = /** @class */ (function () {
     function PriceLinkedList() {
     }
     PriceLinkedList.prototype.append = function (price) {
+        // first price added
         if (!this.first && !this.last) {
             this.first = this.last = price;
         }
-        else {
-            price.prev = this.last;
-            this.last.next = price;
+        // Second added
+        else if (this.first === this.last) {
+            this.first.next = price;
+            this.last = price;
+            this.last.prev = this.first;
         }
+        // Append at the end if there are more then 2
+        else {
+            this.last.next = price;
+            price.prev = this.last;
+            this.last = price;
+        }
+        return price;
     };
     PriceLinkedList.prototype.print = function () {
         if (!this.first && !this.last) {
@@ -33,9 +42,3 @@ var PriceLinkedList = /** @class */ (function () {
     return PriceLinkedList;
 }());
 exports.PriceLinkedList = PriceLinkedList;
-var list = new PriceLinkedList();
-list.append(new price_1.Price(new Date(), 0, 0, 0, 0));
-list.append(new price_1.Price(new Date(), 123, 0, 0, 0));
-list.print();
-var list2 = new PriceLinkedList();
-list2.print();

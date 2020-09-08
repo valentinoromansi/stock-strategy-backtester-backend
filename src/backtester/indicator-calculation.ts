@@ -2,11 +2,11 @@ import { Price } from "../model/price/price"
 import { Direction } from "../model/price/direction"
 
 // Since ema calculation is including current price last one(period - 1) must be excluded
-export function emaValue(emaPeriod: number, price: Price): number {
-  if (!price.hasConnectedPrices(Direction.LEFT, emaPeriod - 1) || emaPeriod <= 0) return 0
-  let ema: number = 0
-  price.executeEachIteration(Direction.LEFT, emaPeriod - 1, (price: Price) => {
-    ema += price.close
+export function smaValue(smaPeriod: number, price: Price): number {
+  if (!price.hasConnectedPrices(Direction.LEFT, smaPeriod - 1) || smaPeriod <= 0) return 0
+  let sma: number = 0
+  price.executeEachIteration(Direction.LEFT, smaPeriod - 1, (price: Price) => {
+    sma += price.close
   })
-  return ema / emaPeriod
+  return sma / smaPeriod
 }

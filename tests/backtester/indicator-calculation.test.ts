@@ -1,6 +1,6 @@
 import { PriceLinkedList } from "../../src/model/price/price-linked-list"
 import { Price } from "../../src/model/price/price"
-import { emaValue } from "../../src/backtester/indicator-calculation"
+import { smaValue } from "../../src/backtester/indicator-calculation"
 
 test("emaValue must properly calculate ema value", () => {
   let prices: PriceLinkedList = new PriceLinkedList()
@@ -14,10 +14,10 @@ test("emaValue must properly calculate ema value", () => {
   prices.append(new Price(new Date(), 0, 8, 0, 0))
   prices.append(new Price(new Date(), 0, 9, 0, 0))
 
-  let ema: number = emaValue(-1, price1)
-  expect(ema).toBe(0)
-  ema = emaValue(5, price1)
-  expect(ema).toBe(0)
-  ema = emaValue(5, price2)
-  expect(ema).toBe((5 + 4 + 3 + 2 + 1) / 5)
+  let sma: number = smaValue(-1, price1)
+  expect(sma).toBe(0)
+  sma = smaValue(5, price1)
+  expect(sma).toBe(0)
+  sma = smaValue(5, price2)
+  expect(sma).toBe((5 + 4 + 3 + 2 + 1) / 5)
 })

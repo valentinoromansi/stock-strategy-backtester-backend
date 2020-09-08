@@ -1,0 +1,23 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var price_linked_list_1 = require("../../src/model/price/price-linked-list");
+var price_1 = require("../../src/model/price/price");
+var indicator_calculation_1 = require("../../src/backtester/indicator-calculation");
+test("emaValue must properly calculate ema value", function () {
+    var prices = new price_linked_list_1.PriceLinkedList();
+    prices.append(new price_1.Price(new Date(), 0, 1, 0, 0));
+    prices.append(new price_1.Price(new Date(), 0, 2, 0, 0));
+    prices.append(new price_1.Price(new Date(), 0, 3, 0, 0));
+    var price1 = prices.append(new price_1.Price(new Date(), 0, 4, 0, 0));
+    var price2 = prices.append(new price_1.Price(new Date(), 0, 5, 0, 0));
+    prices.append(new price_1.Price(new Date(), 0, 6, 0, 0));
+    prices.append(new price_1.Price(new Date(), 0, 7, 0, 0));
+    prices.append(new price_1.Price(new Date(), 0, 8, 0, 0));
+    prices.append(new price_1.Price(new Date(), 0, 9, 0, 0));
+    var ema = indicator_calculation_1.emaValue(-1, price1);
+    expect(ema).toBe(0);
+    ema = indicator_calculation_1.emaValue(5, price1);
+    expect(ema).toBe(0);
+    ema = indicator_calculation_1.emaValue(5, price2);
+    expect(ema).toBe((5 + 4 + 3 + 2 + 1) / 5);
+});
