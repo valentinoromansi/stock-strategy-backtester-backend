@@ -5,6 +5,7 @@ import { Direction } from "../model/price/direction"
 import { IndicatorType } from "./types/indicator-type"
 import { IndicatorList, Indicator } from "./indicator-list"
 
+/*
 const patternTypeFuncMap = new Map<PatternType, (price: Price, indicators: IndicatorList) => boolean>()
 patternTypeFuncMap.set(PatternType.BULL_ENG_BELOW_BELOW, (price: Price, indicators: IndicatorList): boolean => {
   // Calculate and validate SMA
@@ -29,4 +30,5 @@ export function isPatternValid(pattern: PatternType, price: Price, indicators: I
 }
 
 let price: Price = new Price(new Date(), 0, 0, 0, 0)
-console.log(isPatternValid(PatternType.BULL_ENG_BELOW_BELOW, price))
+console.log(isPatternValid(PatternType.BULL_ENG_BELOW_BELOW, price, new IndicatorList()))
+*/
