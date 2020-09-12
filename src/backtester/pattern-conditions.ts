@@ -4,6 +4,34 @@ import { smaValue } from "./indicator-calculation"
 import { Direction } from "../model/price/direction"
 import { IndicatorType } from "./types/indicator-type"
 import { IndicatorList, Indicator } from "./indicator-list"
+import { GraphEntityType } from "./types/graph-entity-type"
+
+/**
+ *
+ * @param price
+ * @param entityType
+ * @param indicatorCalcValue => Value that indicator usses for calculation of value => 9 in EMA9, SMA9 or N value of previous prices in RSI
+ */
+export function getEntityValue(price: Price, entityType: GraphEntityType, indicatorCalcValue: number): number {
+  switch (entityType) {
+    case GraphEntityType.OPEN:
+      return price.open
+    case GraphEntityType.CLOSE:
+      return price.close
+    case GraphEntityType.HIGH:
+      return price.high
+    case GraphEntityType.LOW:
+      return price.low
+    case GraphEntityType.SMA:
+      return smaValue(indicatorCalcValue, price)
+    case GraphEntityType.EMA:
+      return smaValue(indicatorCalcValue, price)
+    case GraphEntityType.RSI:
+      return smaValue(indicatorCalcValue, price)
+    default:
+      return 0
+  }
+}
 
 /*
 const patternTypeFuncMap = new Map<PatternType, (price: Price, indicators: IndicatorList) => boolean>()

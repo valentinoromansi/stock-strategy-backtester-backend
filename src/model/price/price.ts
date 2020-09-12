@@ -29,6 +29,16 @@ export class Price {
     return true
   }
 
+  getConnectedPrice(dir: Direction, iterNum: number): Price {
+    if (!this.hasConnectedPrices(dir, iterNum) || iterNum <= 0) return null
+    let cur: Price = this
+    for (let i = 0; i <= iterNum; ++i) {
+      cur = dir == Direction.LEFT ? cur.prev : cur.next
+    }
+    return cur
+  }
+
+  // Includes onEachIter for current given price
   executeEachIteration(dir: Direction, iterNum: number, onEachIter: (p: Price) => any) {
     if (!this.hasConnectedPrices(dir, iterNum) || iterNum <= 0) return
     let cur: Price = this
