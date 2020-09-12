@@ -30,9 +30,10 @@ export class Price {
   }
 
   getConnectedPrice(dir: Direction, iterNum: number): Price {
-    if (!this.hasConnectedPrices(dir, iterNum) || iterNum <= 0) return null
+    if (iterNum == 0) return this
+    if (!this.hasConnectedPrices(dir, iterNum) || iterNum < 0) return null
     let cur: Price = this
-    for (let i = 0; i <= iterNum; ++i) {
+    for (let i = 0; i < iterNum; ++i) {
       cur = dir == Direction.LEFT ? cur.prev : cur.next
     }
     return cur

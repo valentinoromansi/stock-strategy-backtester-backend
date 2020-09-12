@@ -3,7 +3,7 @@ import { Direction } from "../model/price/direction"
 
 // Since ema calculation is including current price last one(period - 1) must be excluded
 export function smaValue(smaPeriod: number, price: Price): number {
-  if (!price.hasConnectedPrices(Direction.LEFT, smaPeriod - 1) || smaPeriod <= 0) return 0
+  if (!price.hasConnectedPrices(Direction.LEFT, smaPeriod - 1) || smaPeriod <= 0) return null
   let sma: number = 0
   price.executeEachIteration(Direction.LEFT, smaPeriod - 1, (price: Price) => {
     sma += price.close
@@ -12,28 +12,38 @@ export function smaValue(smaPeriod: number, price: Price): number {
 }
 
 /* EMA: {Close - EMA(previous day)} x multiplier + EMA(previous day)
- * For EMA10 prices from previous 20 days are needed
- * 1.) Prices from previous 10 days are needed to accurately calculate todays EMA value
- * 2.) Price 9 days in the past will calculate it's EMA using SMA of previous day. FOr that SMA there need to exist 10 prices before it
- * Prices on days => [1 ,2, 3, 4, 5 ,6 , 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
- * 1 to 10 are for calculating SMA10 for day 10, 11 to 20 are to accurately calculate EMA10 for day 20
+ * For EMAX, X*2-1 prices are needed
+ * 1th to (x - 1)th prices are used to calculate SMA for (x - 1)th price
+ * Xth to (x + 2)th prices are used to calculate EMA
+ * For EMA4, prices from previous 7 days are needed
  */
 export function emaValue(emaPeriod: number, price: Price): number {
-  if (!price.hasConnectedPrices(Direction.LEFT, emaPeriod * 2 - 1) || emaPeriod <= 0) return 0
-  const sma = smaValue(emaPeriod, price.getConnectedPrice(Direction.LEFT, emaPeriod - 1)) // (1),2,3,4,5,6,7,8,9, 10 => 1 will be initial price
+  if (!price.hasConnectedPrices(Direction.LEFT, emaPeriod * 2 - 4) || emaPeriod <= 0) return null
+  const sma = smaValue(emaPeriod, price.getConnectedPrice(Direction.LEFT, emaPeriod - 1))
   const multiplier = 2 / (emaPeriod + 1)
+  const k = 2 / (emaPeriod + 1)
   let ema: number = 0
-  console.log(sma)
-  for (let i = 0; i < emaPeriod; ++i) {
-    const emaPrice = price.getConnectedPrice(Direction.LEFT, emaPeriod - 1)
-    const prevEma = i == 0 ? sma : ema
-    ema = (emaPrice.close - prevEma) * multiplier + prevEma
-    console.log(ema)
+  for (var i = 1; i < emaPeriod; i++) {
+    const prevEmaValue = i == 1 ? sma : ema
+    const currentPrice = price.getConnectedPrice(Direction.LEFT, emaPeriod - 1 - i).close
+    ema = (currentPrice - prevEmaValue) * multiplier + prevEmaValue
+    //console.log(`(${currentPrice} - ${prevEmaValue}) * ${multiplier} + ${prevEmaValue} = ` + ema)
   }
   return ema
 }
 
-// Since ema calculation is including current price last one(period - 1) must be excluded
-export function rsiValue(smaPeriod: number, price: Price): number {
-  return 0
+// THIS SHIT NEEDS TO BE TESTED
+export function rsiValue(rsiPeriod: number, price: Price): number {
+  if (!price.hasConnectedPrices(Direction.LEFT, rsiPeriod) || rsiPeriod <= 0) return null
+  let gainSum = 0
+  let lossSum = 0
+  price.executeEachIteration(Direction.LEFT, rsiPeriod - 1, (price) => {
+    const prevPrice = price.getConnectedPrice(Direction.LEFT, 1)
+    if (price.close > prevPrice.close) gainSum += price.close - prevPrice.close
+    if (price.close < prevPrice.close) lossSum += prevPrice.close - price.close
+    console.log(gainSum + " " + lossSum)
+  })
+  const rs = gainSum / rsiPeriod / (lossSum / rsiPeriod)
+  console.log(rs)
+  return 100 - 100 / (1 + rs)
 }
