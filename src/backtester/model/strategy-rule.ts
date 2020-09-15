@@ -18,6 +18,10 @@ id defines entity moved from current price => entity[0] would be current entity,
 export class StrategyRule {
   graphEntity1: GraphEntity
   position: GraphPositionType
-  positionOffset: number
+  offsetPercentage: number
   graphEntity2: GraphEntity
+
+  constructor(init?: Partial<StrategyRule>) {
+    Object.assign(this, init)
+  }
 }

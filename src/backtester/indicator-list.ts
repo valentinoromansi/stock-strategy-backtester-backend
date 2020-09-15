@@ -1,5 +1,5 @@
 import { IndicatorType } from "./types/indicator-type"
-//import { LocationType } from "./location-type"
+import { LocationType } from "./types/location-type"
 
 // value -> PERIOD for moving average for EMA and SMA, VALUE for RSI
 export type Indicator = { type: IndicatorType; value: number; priceToindicatorLocation: LocationType }

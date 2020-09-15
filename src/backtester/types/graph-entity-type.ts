@@ -1,9 +1,11 @@
 export enum GraphEntityType {
-  OPEN,
-  CLOSE,
-  LOW,
-  HIGH,
-  SMA,
-  EMA,
-  RSI,
+  OPEN = "OPEN",
+  CLOSE = "CLOSE",
+  LOW = "LOW",
+  HIGH = "HIGH",
+  SMA = "SMA",
+  EMA = "EMA",
+  RSI = "RSI",
 }
+
+
