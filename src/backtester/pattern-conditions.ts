@@ -1,4 +1,4 @@
-import { Price } from "../model/price/price"
+import { VerticalSlice } from "../model/price/vertical-slice"
 import { smaValue, emaValue, rsiValue } from "./indicator-calculation"
 import { Direction } from "../model/price/direction"
 import { IndicatorType } from "./types/indicator-type"
@@ -14,7 +14,7 @@ import { GraphEntity } from "./model/graph-entity"
  * @param entityType
  * @param indicatorCalcValue => Value that indicator usses for calculation of value => 9 in EMA9, SMA9 or N value of previous prices in RSI
  */
-export function getEntityValue(price: Price, entityType: GraphEntityType, indicatorCalcValue: number = null): number {
+export function getEntityValue(price: VerticalSlice, entityType: GraphEntityType, indicatorCalcValue: number = null): number {
   switch (entityType) {
     case GraphEntityType.OPEN:
       return price.open
@@ -39,7 +39,7 @@ function isTypePrice(entityType: GraphEntityType) {
   return [GraphEntityType.OPEN, GraphEntityType.CLOSE, GraphEntityType.HIGH, GraphEntityType.LOW].includes(entityType)
 }
 
-function getComparisonValue(price: Price, entity: GraphEntity): number {
+function getComparisonValue(price: VerticalSlice, entity: GraphEntity): number {
   // if it's price value
   if (isTypePrice(entity.type)) {
     const priceForEntity = price.getConnectedPrice(Direction.RIGHT, entity.id)
@@ -53,7 +53,7 @@ function getComparisonValue(price: Price, entity: GraphEntity): number {
 }
 
 // Used only for when entityType1 is OPEN, CLOSE, HIGH, LOW
-export function areValuesWithinRangeEqual(price: Price, rule: StrategyRule): boolean {
+export function areValuesWithinRangeEqual(price: VerticalSlice, rule: StrategyRule): boolean {
   const price1 = price.getConnectedPrice(Direction.RIGHT, rule.graphEntity1.id)
   if (!isTypePrice(rule.graphEntity1.type) && price1 && price1 != price) return false
   // Get offset
@@ -70,18 +70,24 @@ export function areValuesWithinRangeEqual(price: Price, rule: StrategyRule): boo
   return val2 >= val1 - offset && val2 <= val1 + offset
 }
 
-export function isPatternValid(price: Price, strategyRules: StrategyRule[]): boolean {
+/**
+ * Takes single price and checks if it satisfies all defined rules
+ * @param price
+ * @param strategyRules
+ */
+export function isPatternValid(price: VerticalSlice, strategyRules: StrategyRule[]): boolean {
   const biggestId = Math.max(...strategyRules.map((rule) => Math.max(rule.graphEntity1.id, rule.graphEntity2.id)))
   if (!price.hasConnectedPrices(Direction.RIGHT, biggestId)) return false
 
   let priceEnums = [GraphEntityType.OPEN, GraphEntityType.CLOSE, GraphEntityType.HIGH, GraphEntityType.LOW]
-  strategyRules.forEach((rule) => {
+  for (let i = 0; i < strategyRules.length; ++i) {
+    const rule = strategyRules[i]
     const val1 = getComparisonValue(price, rule.graphEntity1)
     const val2 = getComparisonValue(price, rule.graphEntity2)
     // check if rule is valid
     if (rule.position == GraphPositionType.ABOVE && val1 > val2) return true
     if (rule.position == GraphPositionType.BELOW && val1 < val2) return true
     if (rule.position == GraphPositionType.EQUAL && areValuesWithinRangeEqual(price, rule)) return true
-  })
+  }
   return false
 }

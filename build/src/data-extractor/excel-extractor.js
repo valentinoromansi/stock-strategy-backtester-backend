@@ -43,7 +43,8 @@ exports.ExcelExtractor = void 0;
 var csv_parser_1 = __importDefault(require("csv-parser"));
 var fs_1 = require("fs");
 var yml_1 = require("../yml/yml");
-var price_1 = require("../model/price/price");
+var vertical_slice_1 = require("../model/price/vertical-slice");
+var stock_data_1 = require("../model/price/stock-data");
 var ExcelExtractor = /** @class */ (function () {
     function ExcelExtractor() {
     }
@@ -60,51 +61,50 @@ var ExcelExtractor = /** @class */ (function () {
             });
         });
     };
-    ExcelExtractor.prototype.extractCsvData = function (path) {
+    ExcelExtractor.prototype.extractCsvData = function (path, withPointers) {
+        if (withPointers === void 0) { withPointers = true; }
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 return [2 /*return*/, new Promise(function (resolve, rej) {
-                        var results = [];
-                        var price = new price_1.Price(new Date(), 0, 0, 0, 0);
+                        var stockData = new stock_data_1.StockData();
+                        var slice = new vertical_slice_1.VerticalSlice(new Date(), 0, 0, 0, 0);
                         fs_1.createReadStream(path)
                             .pipe(csv_parser_1.default({}))
                             .on("data", function (data) {
-                            data.prev =
-                                price.next;
-                            results.push(data);
+                            stockData.append(data, withPointers);
                         })
                             .on("end", function () {
-                            resolve(results);
+                            resolve(stockData);
                         });
                     })];
             });
         });
     };
-    ExcelExtractor.prototype.readPriceData = function () {
+    ExcelExtractor.prototype.readPriceData = function (withPointers) {
         var _this = this;
+        if (withPointers === void 0) { withPointers = true; }
         return new Promise(function (resolve, rej) { return __awaiter(_this, void 0, void 0, function () {
-            var fileNames, prices, allParsedCsv, i, extractedCsvData;
+            var fileNames, stocksData, i, extractedStockData;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this.getFileNames(yml_1.yml.excelPath)];
                     case 1:
                         fileNames = _a.sent();
-                        prices = [];
-                        allParsedCsv = [];
+                        stocksData = [];
                         i = 0;
                         _a.label = 2;
                     case 2:
                         if (!(i < fileNames.length)) return [3 /*break*/, 5];
-                        return [4 /*yield*/, this.extractCsvData(yml_1.yml.excelPath + "/" + fileNames[i])];
+                        return [4 /*yield*/, this.extractCsvData(yml_1.yml.excelPath + "/" + fileNames[i], withPointers)];
                     case 3:
-                        extractedCsvData = _a.sent();
-                        allParsedCsv.push(extractedCsvData);
+                        extractedStockData = _a.sent();
+                        stocksData.push(extractedStockData);
                         _a.label = 4;
                     case 4:
                         i++;
                         return [3 /*break*/, 2];
                     case 5:
-                        resolve(allParsedCsv);
+                        resolve(stocksData);
                         return [2 /*return*/];
                 }
             });

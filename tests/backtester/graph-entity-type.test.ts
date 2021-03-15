@@ -1,5 +1,5 @@
-import { PriceLinkedList } from "../../src/model/price/price-linked-list"
-import { Price } from "../../src/model/price/price"
+import { StockData } from "../../src/model/price/stock-data"
+import { VerticalSlice } from "../../src/model/price/vertical-slice"
 import { smaValue } from "../../src/backtester/indicator-calculation"
 import { GraphEntityType } from "../../src/backtester/types/graph-entity-type"
 

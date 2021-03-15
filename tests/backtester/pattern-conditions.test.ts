@@ -1,5 +1,5 @@
-import { PriceLinkedList } from "../../src/model/price/price-linked-list"
-import { Price } from "../../src/model/price/price"
+import { StockData } from "../../src/model/price/stock-data"
+import { VerticalSlice } from "../../src/model/price/vertical-slice"
 import { smaValue } from "../../src/backtester/indicator-calculation"
 import { StrategyRule } from "../../src/backtester/model/strategy-rule"
 import { GraphEntity } from "../../src/backtester/model/graph-entity"
@@ -65,9 +65,9 @@ graphEntity1: GraphEntity
   graphEntity2: GraphEntity
 */
 test("areValuesWithOffsetEqual for GraphEntityType.LOW", () => {
-  const prices: PriceLinkedList = new PriceLinkedList()
-  const price1 = prices.append(new Price(new Date(), 12, 11, 0, 9))
-  const price2 = prices.append(new Price(new Date(), 0, 0, 0, 0))
+  const prices: StockData = new StockData()
+  const price1 = prices.append(new VerticalSlice(new Date(), 12, 11, 0, 9))
+  const price2 = prices.append(new VerticalSlice(new Date(), 0, 0, 0, 0))
   const rule = new StrategyRule({
     graphEntity1: new GraphEntity({
       id: 0,
@@ -98,9 +98,9 @@ test("areValuesWithOffsetEqual for GraphEntityType.LOW", () => {
 })
 
 test("areValuesWithOffsetEqual for GraphEntityType.HIGH", () => {
-  const prices: PriceLinkedList = new PriceLinkedList()
-  const price1 = prices.append(new Price(new Date(), 12, 11, 14, 0))
-  const price2 = prices.append(new Price(new Date(), 0, 0, 0, 0))
+  const prices: StockData = new StockData()
+  const price1 = prices.append(new VerticalSlice(new Date(), 12, 11, 14, 0))
+  const price2 = prices.append(new VerticalSlice(new Date(), 0, 0, 0, 0))
   const rule = new StrategyRule({
     graphEntity1: new GraphEntity({
       id: 0,
@@ -131,9 +131,9 @@ test("areValuesWithOffsetEqual for GraphEntityType.HIGH", () => {
 })
 
 test("areValuesWithOffsetEqual for GraphEntityType.OPEN", () => {
-  const prices: PriceLinkedList = new PriceLinkedList()
-  const price1 = prices.append(new Price(new Date(), 10, 11, 0, 0))
-  const price2 = prices.append(new Price(new Date(), 0, 0, 0, 0))
+  const prices: StockData = new StockData()
+  const price1 = prices.append(new VerticalSlice(new Date(), 10, 11, 0, 0))
+  const price2 = prices.append(new VerticalSlice(new Date(), 0, 0, 0, 0))
   const rule = new StrategyRule({
     graphEntity1: new GraphEntity({
       id: 0,
@@ -164,9 +164,9 @@ test("areValuesWithOffsetEqual for GraphEntityType.OPEN", () => {
 })
 
 test("areValuesWithOffsetEqual for GraphEntityType.CLOSE", () => {
-  const prices: PriceLinkedList = new PriceLinkedList()
-  const price1 = prices.append(new Price(new Date(), 10, 11, 0, 0))
-  const price2 = prices.append(new Price(new Date(), 0, 0, 0, 0))
+  const prices: StockData = new StockData()
+  const price1 = prices.append(new VerticalSlice(new Date(), 10, 11, 0, 0))
+  const price2 = prices.append(new VerticalSlice(new Date(), 0, 0, 0, 0))
   const rule = new StrategyRule({
     graphEntity1: new GraphEntity({
       id: 0,

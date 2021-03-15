@@ -1,11 +1,11 @@
-import { Price } from "../model/price/price"
+import { VerticalSlice } from "../model/price/vertical-slice"
 import { Direction } from "../model/price/direction"
 
 // Since ema calculation is including current price last one(period - 1) must be excluded
-export function smaValue(smaPeriod: number, price: Price): number {
+export function smaValue(smaPeriod: number, price: VerticalSlice): number {
   if (!price.hasConnectedPrices(Direction.LEFT, smaPeriod - 1) || smaPeriod <= 0) return null
   let sma: number = 0
-  price.executeEachIteration(Direction.LEFT, smaPeriod - 1, (price: Price) => {
+  price.executeEachIteration(Direction.LEFT, smaPeriod - 1, (price: VerticalSlice) => {
     sma += price.close
   })
   return sma / smaPeriod
@@ -17,7 +17,7 @@ export function smaValue(smaPeriod: number, price: Price): number {
  * Xth to (x + 2)th prices are used to calculate EMA
  * For EMA4, prices from previous 7 days are needed
  */
-export function emaValue(emaPeriod: number, price: Price): number {
+export function emaValue(emaPeriod: number, price: VerticalSlice): number {
   if (!price.hasConnectedPrices(Direction.LEFT, emaPeriod * 2 - 4) || emaPeriod <= 0) return null
   const sma = smaValue(emaPeriod, price.getConnectedPrice(Direction.LEFT, emaPeriod - 1))
   const multiplier = 2 / (emaPeriod + 1)
@@ -33,7 +33,7 @@ export function emaValue(emaPeriod: number, price: Price): number {
 }
 
 // THIS SHIT NEEDS TO BE TESTED
-export function rsiValue(rsiPeriod: number, price: Price): number {
+export function rsiValue(rsiPeriod: number, price: VerticalSlice): number {
   if (!price.hasConnectedPrices(Direction.LEFT, rsiPeriod) || rsiPeriod <= 0) return null
   let gainSum = 0
   let lossSum = 0
