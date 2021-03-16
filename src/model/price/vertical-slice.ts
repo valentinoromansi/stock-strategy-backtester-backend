@@ -1,5 +1,7 @@
 import { Direction } from "./direction"
 import { PriceType } from "../../backtester/types/price-type"
+import { GraphEntityType } from "../../backtester/types/graph-entity-type"
+import { emaValue, rsiValue, smaValue } from "../../backtester/indicator-calculation"
 
 /**
  * Vertical slice includes all attributes and values on given date
@@ -25,6 +27,10 @@ export class VerticalSlice {
   low: number
   next: VerticalSlice
   prev: VerticalSlice
+  
+  static copy(slice: any): VerticalSlice {
+    return new VerticalSlice(slice.time, +slice.open, +slice.close, +slice.high, +slice.low)
+  }
 
   hasConnectedPrices(dir: Direction, iterNum: number): boolean {
     if (iterNum == 0) return false
@@ -51,21 +57,25 @@ export class VerticalSlice {
    * Moves from this vertical slice in 'dir' direction 'iterNum' number of times and executes 'onEachIter' for each slice.
    * If iteration number is not specified it iterates in given direction until last slice is reached
    */
-  executeEachIteration(dir: Direction, iterNum: number, onEachIter: (p: VerticalSlice) => any) {
+  executeEachIteration(dir: Direction, iterNum: number, onEachIter: (p: VerticalSlice) => boolean) {
     if (iterNum && (!this.hasConnectedPrices(dir, iterNum) || iterNum <= 0)) return
     let cur: VerticalSlice = this
+    let continueIteration = true
     // For defined iteraton num. run onEachIter that many times
     if (iterNum != null) {
       for (let i = 0; i <= iterNum; ++i) {
-        onEachIter(cur)
+        continueIteration = onEachIter(cur)
+        if (!continueIteration) return
         cur = dir == Direction.LEFT ? cur.prev : cur.next
       }
     }
     // For undefined iteraton num. run onEachIter as many times as there are prices
     else {
-      onEachIter(cur)
+      continueIteration = onEachIter(cur)
+      if (!continueIteration) return
       while (cur.next) {
-        onEachIter(cur)
+        continueIteration = onEachIter(cur)
+        if (!continueIteration) return
         cur = cur.next
       }
     }
@@ -76,4 +86,26 @@ export class VerticalSlice {
     if (price.close < price.open) return PriceType.BEARISH
     return PriceType.UNDECISIVE
   }
+
+  getAttributeValue(entityType: GraphEntityType, indicatorCalcValue: number = null): number {
+    switch (entityType) {
+      case GraphEntityType.OPEN:
+        return this.open
+      case GraphEntityType.CLOSE:
+        return this.close
+      case GraphEntityType.HIGH:
+        return this.high
+      case GraphEntityType.LOW:
+        return this.low
+      case GraphEntityType.SMA:
+        return smaValue(indicatorCalcValue, this)
+      case GraphEntityType.EMA:
+        return emaValue(indicatorCalcValue, this)
+      case GraphEntityType.RSI:
+        return rsiValue(indicatorCalcValue, this)
+      default:
+        return 0
+    }
+  }
+
 }

@@ -42,15 +42,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.app = void 0;
 var excel_extractor_1 = require("./data-extractor/excel-extractor");
 var express_1 = __importDefault(require("express"));
-var vertical_slice_1 = require("./model/price/vertical-slice");
 var direction_1 = require("./model/price/direction");
-var pattern_conditions_1 = require("./backtester/pattern-conditions");
 var strategy_rule_1 = require("./backtester/model/strategy-rule");
 var graph_entity_1 = require("./backtester/model/graph-entity");
 var graph_entity_type_1 = require("./backtester/types/graph-entity-type");
 var graph_position_type_1 = require("./backtester/types/graph-position-type");
 var backtest_1 = require("./backtester/backtest/backtest");
-var price_type_1 = require("./backtester/types/price-type");
+var pattern_conditions_1 = require("./backtester/pattern-conditions");
+var strategy_1 = require("./backtester/model/strategy");
 function setHeaders(res) {
     res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE");
@@ -84,48 +83,73 @@ exports.app.get("/stock-data", function (req, res) { return __awaiter(void 0, vo
 }); });
 // Do backtest
 exports.app.get("/backtest", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var stocksData, rules, backtestData;
+    var strategy, stocksData, backtestData;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 console.log('/backtest called...');
                 setHeaders(res);
-                return [4 /*yield*/, priceExtractor.readPriceData(true)
-                    // Defined rules
-                ];
+                strategy = new strategy_1.Strategy({
+                    name: '2 bar play',
+                    enterEntity: new graph_entity_1.GraphEntity({
+                        id: 1,
+                        period: null,
+                        type1: graph_entity_type_1.GraphEntityType.CLOSE,
+                    }),
+                    stopLossEntity: new graph_entity_1.GraphEntity({
+                        id: 0,
+                        period: null,
+                        type1: graph_entity_type_1.GraphEntityType.OPEN,
+                        type2: graph_entity_type_1.GraphEntityType.CLOSE,
+                        percent: 0.5
+                    }),
+                    rules: [
+                        // second price closed below first close
+                        new strategy_rule_1.StrategyRule({
+                            graphEntity1: new graph_entity_1.GraphEntity({
+                                id: 0,
+                                period: null,
+                                type1: graph_entity_type_1.GraphEntityType.CLOSE,
+                            }),
+                            position: graph_position_type_1.GraphPositionType.ABOVE,
+                            graphEntity2: new graph_entity_1.GraphEntity({
+                                id: 1,
+                                period: null,
+                                type1: graph_entity_type_1.GraphEntityType.CLOSE,
+                            }),
+                        }),
+                        // second price closed above second candles 50% body height
+                        new strategy_rule_1.StrategyRule({
+                            graphEntity1: new graph_entity_1.GraphEntity({
+                                id: 1,
+                                period: null,
+                                type1: graph_entity_type_1.GraphEntityType.CLOSE,
+                            }),
+                            position: graph_position_type_1.GraphPositionType.ABOVE,
+                            graphEntity2: new graph_entity_1.GraphEntity({
+                                id: 0,
+                                period: null,
+                                type1: graph_entity_type_1.GraphEntityType.OPEN,
+                                type2: graph_entity_type_1.GraphEntityType.CLOSE,
+                                percent: 0.5
+                            }),
+                        })
+                    ],
+                });
+                return [4 /*yield*/, priceExtractor.readPriceData(true)];
             case 1:
                 stocksData = _a.sent();
-                rules = [
-                    new strategy_rule_1.StrategyRule({
-                        graphEntity1: new graph_entity_1.GraphEntity({
-                            id: 1,
-                            period: null,
-                            type: graph_entity_type_1.GraphEntityType.CLOSE,
-                        }),
-                        position: graph_position_type_1.GraphPositionType.ABOVE,
-                        offsetPercentage: 0,
-                        graphEntity2: new graph_entity_1.GraphEntity({
-                            id: 0,
-                            period: null,
-                            type: graph_entity_type_1.GraphEntityType.OPEN,
-                        }),
-                    }),
-                ];
                 backtestData = new backtest_1.BacktestData(1);
-                stocksData[0].first().executeEachIteration(direction_1.Direction.RIGHT, stocksData.length - 1, function (price) {
-                    /*
-                    WHY THE FCK DOES getPriceType RETURNES FALSE ALL THE FFCKING TIME!!!!!!!!!!!!!!!!!!!!!
-                    */
-                    console.log(pattern_conditions_1.isPatternValid(price, rules));
-                    console.log(vertical_slice_1.VerticalSlice.getPriceType(price) == price_type_1.PriceType.BEARISH);
-                    console.log(vertical_slice_1.VerticalSlice.getPriceType(price.next) == price_type_1.PriceType.BULLISH);
-                    if (pattern_conditions_1.isPatternValid(price, rules) &&
-                        vertical_slice_1.VerticalSlice.getPriceType(price) == price_type_1.PriceType.BEARISH &&
-                        vertical_slice_1.VerticalSlice.getPriceType(price.next) == price_type_1.PriceType.BULLISH)
-                        backtestData.doBacktest(price);
+                stocksData[0].first().executeEachIteration(direction_1.Direction.RIGHT, stocksData[0].length - 1, function (slice) {
+                    // Test if pattern is valid for given slice
+                    if (pattern_conditions_1.isPatternValid(slice, strategy.rules)) {
+                        backtestData.doBacktest(slice, strategy);
+                    }
+                    return true;
                 });
-                //console.log(JSON.stringify(backtestData))
-                res.send({});
+                backtestData.print();
+                res.send(JSON.stringify(backtestData));
+                console.log('/backtest ended...');
                 return [2 /*return*/];
         }
     });

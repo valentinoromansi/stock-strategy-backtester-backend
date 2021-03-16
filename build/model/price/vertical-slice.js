@@ -3,6 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.VerticalSlice = void 0;
 var direction_1 = require("./direction");
 var price_type_1 = require("../../backtester/types/price-type");
+var graph_entity_type_1 = require("../../backtester/types/graph-entity-type");
+var indicator_calculation_1 = require("../../backtester/indicator-calculation");
 /**
  * Vertical slice includes all attributes and values on given date
  * It consists of:
@@ -18,6 +20,9 @@ var VerticalSlice = /** @class */ (function () {
         this.high = high;
         this.low = low;
     }
+    VerticalSlice.copy = function (slice) {
+        return new VerticalSlice(slice.time, +slice.open, +slice.close, +slice.high, +slice.low);
+    };
     VerticalSlice.prototype.hasConnectedPrices = function (dir, iterNum) {
         if (iterNum == 0)
             return false;
@@ -50,18 +55,25 @@ var VerticalSlice = /** @class */ (function () {
         if (iterNum && (!this.hasConnectedPrices(dir, iterNum) || iterNum <= 0))
             return;
         var cur = this;
+        var continueIteration = true;
         // For defined iteraton num. run onEachIter that many times
         if (iterNum != null) {
             for (var i = 0; i <= iterNum; ++i) {
-                onEachIter(cur);
+                continueIteration = onEachIter(cur);
+                if (!continueIteration)
+                    return;
                 cur = dir == direction_1.Direction.LEFT ? cur.prev : cur.next;
             }
         }
         // For undefined iteraton num. run onEachIter as many times as there are prices
         else {
-            onEachIter(cur);
+            continueIteration = onEachIter(cur);
+            if (!continueIteration)
+                return;
             while (cur.next) {
-                onEachIter(cur);
+                continueIteration = onEachIter(cur);
+                if (!continueIteration)
+                    return;
                 cur = cur.next;
             }
         }
@@ -72,6 +84,27 @@ var VerticalSlice = /** @class */ (function () {
         if (price.close < price.open)
             return price_type_1.PriceType.BEARISH;
         return price_type_1.PriceType.UNDECISIVE;
+    };
+    VerticalSlice.prototype.getAttributeValue = function (entityType, indicatorCalcValue) {
+        if (indicatorCalcValue === void 0) { indicatorCalcValue = null; }
+        switch (entityType) {
+            case graph_entity_type_1.GraphEntityType.OPEN:
+                return this.open;
+            case graph_entity_type_1.GraphEntityType.CLOSE:
+                return this.close;
+            case graph_entity_type_1.GraphEntityType.HIGH:
+                return this.high;
+            case graph_entity_type_1.GraphEntityType.LOW:
+                return this.low;
+            case graph_entity_type_1.GraphEntityType.SMA:
+                return indicator_calculation_1.smaValue(indicatorCalcValue, this);
+            case graph_entity_type_1.GraphEntityType.EMA:
+                return indicator_calculation_1.emaValue(indicatorCalcValue, this);
+            case graph_entity_type_1.GraphEntityType.RSI:
+                return indicator_calculation_1.rsiValue(indicatorCalcValue, this);
+            default:
+                return 0;
+        }
     };
     return VerticalSlice;
 }());

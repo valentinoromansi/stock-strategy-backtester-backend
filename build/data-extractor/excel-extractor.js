@@ -67,11 +67,10 @@ var ExcelExtractor = /** @class */ (function () {
             return __generator(this, function (_a) {
                 return [2 /*return*/, new Promise(function (resolve, rej) {
                         var stockData = new stock_data_1.StockData();
-                        var slice = new vertical_slice_1.VerticalSlice(new Date(), 0, 0, 0, 0);
                         fs_1.createReadStream(path)
                             .pipe(csv_parser_1.default({}))
                             .on("data", function (data) {
-                            stockData.append(data, withPointers);
+                            stockData.append(vertical_slice_1.VerticalSlice.copy(data), withPointers);
                         })
                             .on("end", function () {
                             resolve(stockData);
@@ -81,34 +80,38 @@ var ExcelExtractor = /** @class */ (function () {
         });
     };
     ExcelExtractor.prototype.readPriceData = function (withPointers) {
-        var _this = this;
         if (withPointers === void 0) { withPointers = true; }
-        return new Promise(function (resolve, rej) { return __awaiter(_this, void 0, void 0, function () {
-            var fileNames, stocksData, i, extractedStockData;
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.getFileNames(yml_1.yml.excelPath)];
-                    case 1:
-                        fileNames = _a.sent();
-                        stocksData = [];
-                        i = 0;
-                        _a.label = 2;
-                    case 2:
-                        if (!(i < fileNames.length)) return [3 /*break*/, 5];
-                        return [4 /*yield*/, this.extractCsvData(yml_1.yml.excelPath + "/" + fileNames[i], withPointers)];
-                    case 3:
-                        extractedStockData = _a.sent();
-                        stocksData.push(extractedStockData);
-                        _a.label = 4;
-                    case 4:
-                        i++;
-                        return [3 /*break*/, 2];
-                    case 5:
-                        resolve(stocksData);
-                        return [2 /*return*/];
-                }
+                return [2 /*return*/, new Promise(function (resolve, rej) { return __awaiter(_this, void 0, void 0, function () {
+                        var fileNames, stocksData, i, extractedStockData;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0: return [4 /*yield*/, this.getFileNames(yml_1.yml.excelPath)];
+                                case 1:
+                                    fileNames = _a.sent();
+                                    stocksData = [];
+                                    i = 0;
+                                    _a.label = 2;
+                                case 2:
+                                    if (!(i < fileNames.length)) return [3 /*break*/, 5];
+                                    return [4 /*yield*/, this.extractCsvData(yml_1.yml.excelPath + "/" + fileNames[i], withPointers)];
+                                case 3:
+                                    extractedStockData = _a.sent();
+                                    stocksData.push(extractedStockData);
+                                    _a.label = 4;
+                                case 4:
+                                    i++;
+                                    return [3 /*break*/, 2];
+                                case 5:
+                                    resolve(stocksData);
+                                    return [2 /*return*/];
+                            }
+                        });
+                    }); })];
             });
-        }); });
+        });
     };
     return ExcelExtractor;
 }());

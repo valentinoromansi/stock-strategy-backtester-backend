@@ -9,7 +9,6 @@ id defines entity moved from current price => entity[0] would be current entity,
 		"id1": "0"
 		"name1": "open",
 	"position": "below",
-	"positionOffset": 10 // used as percentage
 	"entity2":
 		"id2": "0",
 		"name2": "EMA9",
@@ -18,7 +17,6 @@ id defines entity moved from current price => entity[0] would be current entity,
 export class StrategyRule {
   graphEntity1: GraphEntity
   position: GraphPositionType
-  offsetPercentage: number
   graphEntity2: GraphEntity
 
   constructor(init?: Partial<StrategyRule>) {

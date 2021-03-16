@@ -9,6 +9,7 @@ function smaValue(smaPeriod, price) {
     var sma = 0;
     price.executeEachIteration(direction_1.Direction.LEFT, smaPeriod - 1, function (price) {
         sma += price.close;
+        return true;
     });
     return sma / smaPeriod;
 }
@@ -47,7 +48,7 @@ function rsiValue(rsiPeriod, price) {
             gainSum += price.close - prevPrice.close;
         if (price.close < prevPrice.close)
             lossSum += prevPrice.close - price.close;
-        console.log(gainSum + " " + lossSum);
+        return true;
     });
     var rs = gainSum / rsiPeriod / (lossSum / rsiPeriod);
     console.log(rs);

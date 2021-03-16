@@ -9,7 +9,6 @@ id defines entity moved from current price => entity[0] would be current entity,
         "id1": "0"
         "name1": "open",
     "position": "below",
-    "positionOffset": 10 // used as percentage
     "entity2":
         "id2": "0",
         "name2": "EMA9",

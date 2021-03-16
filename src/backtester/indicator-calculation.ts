@@ -7,6 +7,7 @@ export function smaValue(smaPeriod: number, price: VerticalSlice): number {
   let sma: number = 0
   price.executeEachIteration(Direction.LEFT, smaPeriod - 1, (price: VerticalSlice) => {
     sma += price.close
+    return true
   })
   return sma / smaPeriod
 }
@@ -41,7 +42,7 @@ export function rsiValue(rsiPeriod: number, price: VerticalSlice): number {
     const prevPrice = price.getConnectedPrice(Direction.LEFT, 1)
     if (price.close > prevPrice.close) gainSum += price.close - prevPrice.close
     if (price.close < prevPrice.close) lossSum += prevPrice.close - price.close
-    console.log(gainSum + " " + lossSum)
+    return true
   })
   const rs = gainSum / rsiPeriod / (lossSum / rsiPeriod)
   console.log(rs)

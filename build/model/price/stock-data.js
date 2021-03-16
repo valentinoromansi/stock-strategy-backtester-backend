@@ -19,25 +19,9 @@ var StockData = /** @class */ (function () {
         if (withPointers === void 0) { withPointers = true; }
         this.length++;
         this.slices.push(slice);
-        // First slice added
-        var first = this.first();
-        var last = this.last();
-        if (!first && !last) {
-            first = last = slice;
-        }
-        // Second slice added
-        else if (this.first === this.last) {
-            first.next = slice;
-            last = (withPointers) ? slice : null;
-            if (last)
-                last.prev = (withPointers) ? first : null;
-        }
-        // Append at the end if there are more then 2
-        else {
-            if (last)
-                last.next = (withPointers) ? slice : null;
-            slice.prev = (withPointers) ? last : null;
-            last = slice;
+        if (this.slices.length > 1) {
+            slice.prev = (withPointers) ? this.slices[this.length - 2] : null;
+            slice.prev.next = (withPointers) ? this.slices[this.length - 1] : null;
         }
         return slice;
     };
@@ -61,6 +45,7 @@ var StockData = /** @class */ (function () {
         var stockData = new StockData();
         this.first().executeEachIteration(direction_1.Direction.RIGHT, null, function (slice) {
             stockData.append(new vertical_slice_1.VerticalSlice(slice.time, slice.high, slice.close, slice.high, slice.low));
+            return true;
         });
         return stockData;
     };

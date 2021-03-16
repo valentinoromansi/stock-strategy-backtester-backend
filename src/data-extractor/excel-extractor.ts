@@ -18,11 +18,10 @@ export class ExcelExtractor implements IExtractor {
   async extractCsvData(path: string, withPointers: boolean = true): Promise<StockData> {
     return new Promise((resolve, rej) => {
       let stockData: StockData = new StockData()
-      let slice: VerticalSlice = new VerticalSlice(new Date(), 0, 0, 0, 0)
       createReadStream(path)
         .pipe(csv({}))
-        .on("data", (data: VerticalSlice) => {
-          stockData.append(data, withPointers)
+        .on("data", (data: Buffer) => {
+          stockData.append(VerticalSlice.copy(data), withPointers)
         })
         .on("end", () => {
           resolve(stockData)
@@ -30,7 +29,7 @@ export class ExcelExtractor implements IExtractor {
     })
   }
 
-  readPriceData(withPointers: boolean = true): Promise<StockData[]> {
+  async readPriceData(withPointers: boolean = true): Promise<StockData[]> {
     return new Promise(async (resolve, rej) => {
       const fileNames: string[] = await this.getFileNames(yml.excelPath)
       let stocksData: StockData[] = []

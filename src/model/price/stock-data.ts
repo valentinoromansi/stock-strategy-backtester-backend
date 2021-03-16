@@ -5,7 +5,7 @@ export class StockData {
   constructor() {}
 
   name: string = 'Stock name'
-  slices: VerticalSlice[] = []
+  slices: VerticalSlice[] =  []
   length: number = 0
 
   first(): VerticalSlice {
@@ -19,25 +19,9 @@ export class StockData {
   append(slice: VerticalSlice, withPointers: boolean = true): VerticalSlice {
     this.length++
     this.slices.push(slice)
-    // First slice added
-    let first: VerticalSlice = this.first()
-    let last: VerticalSlice = this.last() 
-    if (!first && !last) {
-      first = last = slice
-    }
-    // Second slice added
-    else if (this.first === this.last) {
-      first.next = slice
-      last = (withPointers) ? slice : null
-      if(last)
-        last.prev = (withPointers) ? first : null
-    }
-    // Append at the end if there are more then 2
-    else {
-      if(last)
-        last.next = (withPointers) ? slice : null
-      slice.prev = (withPointers) ?  last : null
-      last = slice
+    if(this.slices.length > 1) {
+      slice.prev = (withPointers) ? this.slices[this.length - 2] : null
+      slice.prev.next = (withPointers) ? this.slices[this.length - 1] : null
     }
     return slice
   }
@@ -63,6 +47,7 @@ export class StockData {
     let stockData: StockData = new StockData()
     this.first().executeEachIteration(Direction.RIGHT, null, (slice) => {
       stockData.append(new VerticalSlice(slice.time, slice.high, slice.close, slice.high, slice.low))
+      return true
     })
     return stockData
   }
