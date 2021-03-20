@@ -56,6 +56,53 @@ STRATEGY:
     ],
   })
 
+STRATEGY AS JSON:
+{
+    "name": "2 bar play",
+    "enterRad": {
+        "id": 1,
+        "period": null,
+        "type1": "CLOSE"
+    },
+    "stopLossRad": {
+        "id": 0,
+        "period": null,
+        "type1": "OPEN",
+        "type2": "CLOSE",
+        "percent": 0.5
+    },
+    "rules": [
+        {
+            "valueData1": {
+                "id": 0,
+                "period": null,
+                "type1": "CLOSE"
+            },
+            "position": 0,
+            "valueData2": {
+                "id": 1,
+                "period": null,
+                "type1": "CLOSE"
+            }
+        },
+        {
+            "valueData1": {
+                "id": 1,
+                "period": null,
+                "type1": "CLOSE"
+            },
+            "position": 0,
+            "valueData2": {
+                "id": 0,
+                "period": null,
+                "type1": "OPEN",
+                "type2": "CLOSE",
+                "percent": 0.5
+            }
+        }
+    ]
+}
+
 // PROFIT
 EXCEL:
 time,open,high,low,close

@@ -1,9 +1,9 @@
 import csv from "csv-parser"
 import { readdir, createReadStream } from "fs"
 import { yml } from "../yml/yml"
-import { VerticalSlice } from "../model/price/vertical-slice"
+import { VerticalSlice } from "../stock/vertical-slice"
 import IExtractor from "./extractor-i"
-import { StockData } from "../model/price/stock-data"
+import { StockData } from "../stock/stock-data"
 
 export class ExcelExtractor implements IExtractor {
   async getFileNames(dirPath: string): Promise<string[]> {
@@ -20,7 +20,7 @@ export class ExcelExtractor implements IExtractor {
       let stockData: StockData = new StockData()
       createReadStream(path)
         .pipe(csv({}))
-        .on("data", (data: Buffer) => {
+        .on("data", (data: any) => {
           stockData.append(VerticalSlice.copy(data), withPointers)
         })
         .on("end", () => {
@@ -36,6 +36,7 @@ export class ExcelExtractor implements IExtractor {
       for (let i = 0; i < fileNames.length; i++) {
         let extractedStockData: StockData = await this.extractCsvData(`${yml.excelPath}/${fileNames[i]}`, withPointers)
         stocksData.push(extractedStockData)
+        stocksData[i].name = fileNames[i]
       }
       resolve(stocksData)
     })
