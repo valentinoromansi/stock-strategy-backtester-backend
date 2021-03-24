@@ -1,8 +1,9 @@
 import csv from "csv-parser"
 import { readdir, createReadStream } from "fs"
 import { yml } from "../yml/yml"
-import { Price } from "../model/price/price"
+import { VerticalSlice } from "../stock/vertical-slice"
 import IExtractor from "./extractor-i"
+import { StockData } from "../stock/stock-data"
 
 export class ExcelExtractor implements IExtractor {
   async getFileNames(dirPath: string): Promise<string[]> {
@@ -14,33 +15,30 @@ export class ExcelExtractor implements IExtractor {
     })
   }
 
-  async extractCsvData(path: string): Promise<Price[]> {
+  async extractCsvData(path: string, withPointers: boolean = true): Promise<StockData> {
     return new Promise((resolve, rej) => {
-      let results: Price[] = []
-      let price: Price = new Price(new Date(), 0, 0, 0, 0)
+      let stockData: StockData = new StockData()
       createReadStream(path)
         .pipe(csv({}))
-        .on("data", (data: Price) => {
-          data.prev = 
-          price.next         
-          results.push(data)
+        .on("data", (data: any) => {
+          stockData.append(VerticalSlice.copy(data), withPointers)
         })
         .on("end", () => {
-          resolve(results)
+          resolve(stockData)
         })
     })
   }
 
-  readPriceData(): Promise<Price[][]> {
+  async readPriceData(withPointers: boolean = true): Promise<StockData[]> {
     return new Promise(async (resolve, rej) => {
       const fileNames: string[] = await this.getFileNames(yml.excelPath)
-      let prices: Price[] = []
-      let allParsedCsv: Price[][] = []
+      let stocksData: StockData[] = []
       for (let i = 0; i < fileNames.length; i++) {
-        let extractedCsvData: Price[] = await this.extractCsvData(`${yml.excelPath}/${fileNames[i]}`)
-        allParsedCsv.push(extractedCsvData)
+        let extractedStockData: StockData = await this.extractCsvData(`${yml.excelPath}/${fileNames[i]}`, withPointers)
+        stocksData.push(extractedStockData)
+        stocksData[i].name = fileNames[i]
       }
-      resolve(allParsedCsv)
+      resolve(stocksData)
     })
   }
 }

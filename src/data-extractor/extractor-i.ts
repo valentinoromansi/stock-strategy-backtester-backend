@@ -1,5 +1,5 @@
-import { Price } from "../model/price/price"
+import { StockData } from "../stock/stock-data";
 
 export default interface IExtractor {
-  readPriceData(): Promise<Price[][]>
+  readPriceData(withPointers: boolean): Promise<StockData[]>
 }
