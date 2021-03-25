@@ -6,6 +6,20 @@ import IExtractor from "./extractor-i"
 import { StockData } from "../stock/stock-data"
 
 export class ExcelExtractor implements IExtractor {
+
+  async getStockData(withPointers: boolean = true): Promise<StockData[]> {
+    return new Promise(async (resolve, rej) => {
+      const fileNames: string[] = await this.getFileNames(yml.excelPath)
+      let stocksData: StockData[] = []
+      for (let i = 0; i < fileNames.length; i++) {
+        let extractedStockData: StockData = await this.extractCsvData(`${yml.excelPath}/${fileNames[i]}`, withPointers)
+        stocksData.push(extractedStockData)
+        stocksData[i].symbol = fileNames[i]
+      }
+      resolve(stocksData)
+    })
+  }
+
   async getFileNames(dirPath: string): Promise<string[]> {
     return new Promise((resolve, reject) => {
       readdir(dirPath, (err: any, files: string[]) => {
@@ -29,18 +43,6 @@ export class ExcelExtractor implements IExtractor {
     })
   }
 
-  async readPriceData(withPointers: boolean = true): Promise<StockData[]> {
-    return new Promise(async (resolve, rej) => {
-      const fileNames: string[] = await this.getFileNames(yml.excelPath)
-      let stocksData: StockData[] = []
-      for (let i = 0; i < fileNames.length; i++) {
-        let extractedStockData: StockData = await this.extractCsvData(`${yml.excelPath}/${fileNames[i]}`, withPointers)
-        stocksData.push(extractedStockData)
-        stocksData[i].name = fileNames[i]
-      }
-      resolve(stocksData)
-    })
-  }
 }
 
 

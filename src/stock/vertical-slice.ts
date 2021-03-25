@@ -6,19 +6,19 @@ import { RelativeAttributeValueData, RelativeAttributeValueSource } from "../str
 
 /**
  * Vertical slice includes all attributes and values on given date
- * It consists of: 
+ * It consists of:
  *  1.) Date and time
  *  2.) Price attributes - low, high, open, close
  *  3.) Indicator value
  */
 export class VerticalSlice {
-
-  constructor(date: Date, open: number, close: number, high: number, low: number) {
+  constructor(date: Date, open: number, close: number, high: number, low: number, volume: number) {
     this.date = date
-    this.open = open
-    this.close = close
-    this.high = high
-    this.low = low
+    this.open = +open
+    this.close = +close
+    this.high = +high
+    this.low = +low
+    this.volume = +volume
   }
 
   date: Date
@@ -26,11 +26,12 @@ export class VerticalSlice {
   close: number
   high: number
   low: number
+  volume: number
   next: VerticalSlice
   prev: VerticalSlice
-  
-  static copy(data: any): VerticalSlice {    
-    return new VerticalSlice(new Date(data.time), +data.open, +data.close, +data.high, +data.low)
+
+  static copy(data: any): VerticalSlice {
+    return new VerticalSlice(new Date(data.time), +data.open, +data.close, +data.high, +data.low, +data.volume)
   }
 
   hasConnectedPrices(dir: Direction, iterNum: number): boolean {
@@ -116,16 +117,19 @@ export class VerticalSlice {
    *    - 4 for new RelativeAttributeData({ type1: AttributeType.OPEN })
    * @param percent - values from -0.4 to 1.2 would mean -40% to 120%
    */
-     getValueRelativeToAttributes(valueData: RelativeAttributeValueData): number {
-      let ravSource: RelativeAttributeValueSource = valueData.getRelativeAttributeValueSource()
-      if(ravSource === RelativeAttributeValueSource.TYPE1) {
-        return this.getAttributeValue(valueData.type1)
-      }
-      else if(ravSource === RelativeAttributeValueSource.TYPE1_TYPE2) {
-        let lowerAttributeValue = Math.min(this.getAttributeValue(valueData.type1), this.getAttributeValue(valueData.type2))
-        let attributesValueDistance = Math.abs(this.getAttributeValue(valueData.type1) - this.getAttributeValue(valueData.type2))
-        return lowerAttributeValue + attributesValueDistance * valueData.percent
-      }
+  getValueRelativeToAttributes(valueData: RelativeAttributeValueData): number {
+    let ravSource: RelativeAttributeValueSource = valueData.getRelativeAttributeValueSource()
+    if (ravSource === RelativeAttributeValueSource.TYPE1) {
+      return this.getAttributeValue(valueData.type1)
+    } else if (ravSource === RelativeAttributeValueSource.TYPE1_TYPE2) {
+      let lowerAttributeValue = Math.min(
+        this.getAttributeValue(valueData.type1),
+        this.getAttributeValue(valueData.type2)
+      )
+      let attributesValueDistance = Math.abs(
+        this.getAttributeValue(valueData.type1) - this.getAttributeValue(valueData.type2)
+      )
+      return lowerAttributeValue + attributesValueDistance * valueData.percent
     }
-
+  }
 }
