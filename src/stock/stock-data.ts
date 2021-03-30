@@ -7,6 +7,7 @@ export class StockData {
 
   symbol: string
   fundamentals: Fundamentals
+  interval: string
   slices: VerticalSlice[] = []
 
   first(): VerticalSlice {

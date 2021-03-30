@@ -17,6 +17,8 @@ d6fa58c0870e449cba8dce5299ad20fe
 c7a59ff1b766435eae0efa2bcc9428b1
 40bbfe17f23b426b8425a4ef4a1db03b
 e7c9e1c4f83747b6852951df31fd7d48
+23c640b83f6544ff81aa24feced78af6
+0866dfd816bf4cb5970663a98461ae41
 
 == alphavantage ==
 alphavantage company data/min: 5

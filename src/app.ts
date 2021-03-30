@@ -1,4 +1,3 @@
-import IExtractor from "./data-extractor/extractor-i"
 import express from "express"
 import { StockData } from "./stock/stock-data"
 import { Direction } from "./types/direction"
@@ -6,7 +5,7 @@ import { BacktestResult } from "./backtest/backtest-result"
 import { isPatternValid } from "./pattern-validator/pattern-validator"
 import { Strategy } from "./strategy/strategy"
 import { StrategyBacktestResults } from "./backtest/strategy-backtest-results"
-import { ApiExtractor } from "./data-extractor/api-extractor"
+import { ApiReceiver } from "./data-extractor/api-receiver"
 
 function setHeaders(res: any) {
   res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000")
@@ -19,28 +18,25 @@ function setHeaders(res: any) {
 export const app = express()
 app.use(express.json())
 
-const priceExtractor: IExtractor = new ApiExtractor()
+const apiReceiver: ApiReceiver = new ApiReceiver()
 
 // Get price data
 app.get("/update-stock-data", async (req: any, res: any) => {
   console.log("/update-stock-data called...")
   setHeaders(res)
-  let stockData: StockData[] = await priceExtractor.getStockData(false)
-  let jsonNullReplacer = (key: string, value: any) => {
-    if (value !== null) return value
-  }
-  let responseJson: string = JSON.stringify(stockData, jsonNullReplacer, 2)
-  res.send(responseJson, null, 2)
+  const status: boolean = await apiReceiver.updateStockData()
+  res.send(status, null, 2)
   console.log("/update-stock-data ended...")
 })
 
 // Do backtest
 app.get("/backtest", async (req, res) => {
+  /*
   console.log("/backtest called...")
   setHeaders(res)
 
   const strategy: Strategy = Strategy.copy(req.body)
-  let stocksData: StockData[] = await priceExtractor.getStockData(true)
+  let stocksData: StockData[] = await apiReceiver.updateStockData()
 
   let strategyBacktestResults = new StrategyBacktestResults(strategy.name, [])
 
@@ -60,4 +56,5 @@ app.get("/backtest", async (req, res) => {
 
   res.send(JSON.stringify(strategyBacktestResults))
   console.log("/backtest ended...")
+*/
 })
