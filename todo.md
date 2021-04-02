@@ -123,7 +123,7 @@ STRATEGY AS JSON:
 "period": null,
 "type1": "CLOSE"
 },
-"position": 0,
+"position": "ABOVE",
 "valueData2": {
 "id": 1,
 "period": null,
@@ -136,7 +136,7 @@ STRATEGY AS JSON:
 "period": null,
 "type1": "CLOSE"
 },
-"position": 0,
+"position": "ABOVE",
 "valueData2": {
 "id": 0,
 "period": null,

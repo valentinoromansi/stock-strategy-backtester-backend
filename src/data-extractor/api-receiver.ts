@@ -24,6 +24,7 @@ export class ApiReceiver {
     return new Promise(async (resolve) => {
       // Get symbols of all existing stocks
       let symbols: string[] = await this.fetchStockSymbols()
+      symbols = symbols.slice(0, 7)
       const symbolsGrouped = this.getListAsGroup(symbols, APICallsPerMin)
 
       for (const interval of intervals) {
@@ -208,7 +209,7 @@ export class ApiReceiver {
   async fetchStockFundamentals(symbol: string): Promise<Fundamentals> {
     return new Promise(async (resolve) => {
       console.log(`\t\t ${symbol} > Fetching fundamentals data from server.... started`)
-      const url = fundamentalsUrl(symbol, apiKeysManager.getAvailableApiKey().verticalSlicesAPIKey)
+      const url = fundamentalsUrl(symbol, apiKeysManager.getAvailableApiKey().fundamentalsAPIKey)
       await https
         .get(url, (res: any) => {
           let jsonResponse: string = ""
