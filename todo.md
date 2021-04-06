@@ -204,3 +204,5 @@ timesProfited: 0,
 timesLost: 0,
 timesIndecisive: 1
 }
+
+YAHOO stock data: https://finance.yahoo.com/quote/aapl/history?ltr=1

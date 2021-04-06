@@ -1,6 +1,7 @@
 import { VerticalSlice } from "../stock/vertical-slice"
 import { Direction } from "../types/direction"
 import { Strategy } from "../strategy/strategy"
+import { StockData } from "../stock/stock-data"
 
 enum TradeResult {
   PROFIT,
@@ -13,17 +14,22 @@ enum TradeResult {
  * BacktestData object tests 1 stock against 1 strategy and generates backtest data
  */
 export class BacktestResult {
-  constructor(stockName: string, riskToReward: number) {
-    this.stockName = stockName
-    this.riskToReward = riskToReward
+  constructor(stock: StockData, riskToReward: number) {
+    this.stockName = stock.symbol
+    this.interval = stock.interval
+    this.rewardToRisk = riskToReward
   }
 
   stockName: string
-  riskToReward: number
+  interval: string
+  entryDatesOfProfitTrades: Date[] = []
+  rewardToRisk: number
   timesProfited: number = 0
   timesLost: number = 0
   timesIndecisive: number = 0
   winRate: number = 0
+  plRatio: number = 0 //  plRatio=5x, for each x lost, 5x are gained as profit
+  plFactor: number = 0 // plFactor is normalized version of plRatio, 0-0.5 for loss trades, 0.5-1 for profit trades
 
   /**
    * Checks will 'take profit' or 'stop loss' be hit first
@@ -39,17 +45,21 @@ export class BacktestResult {
     // if enter and stop loss value are the same then there is no way to know is it profit or loss
     if (enter === stopLoss) return
     // get take profit value
-    const takeProfit = enter + Math.abs(enter - stopLoss) * this.riskToReward
+    const takeProfit = enter + Math.abs(enter - stopLoss) * this.rewardToRisk
     // check if profit/loss value is hit for each slice on the right
     enterSlice.next.executeEachIteration(Direction.RIGHT, null, (slice) => {
       let result: TradeResult = this.getTradeResult(takeProfit, stopLoss, slice.high, slice.low)
-      if (result === TradeResult.PROFIT) this.timesProfited += 1
-      else if (result === TradeResult.LOSS) this.timesLost += 1
+      if (result === TradeResult.PROFIT) {
+        this.timesProfited += 1
+        this.entryDatesOfProfitTrades.push(slice0.date)
+      } else if (result === TradeResult.LOSS) this.timesLost += 1
       else if (result === TradeResult.INDECISIVE) this.timesIndecisive += 1
       // If result value is profit, loss or indecisive then calculate win rate and stop further backtesting
       if (result !== TradeResult.NONE) {
         const profitsAndLoses = this.timesProfited + this.timesLost
         this.winRate = profitsAndLoses != 0 ? this.timesProfited / profitsAndLoses : 0
+        this.updatePlRatio()
+        this.getPlFactor()
         return false
       }
       // If there is no next slice return failed backtest
@@ -67,11 +77,19 @@ export class BacktestResult {
     return TradeResult.NONE
   }
 
+  private updatePlRatio() {
+    this.plRatio = this.winRate == 1 ? 9999 : (this.winRate * this.rewardToRisk) / (1 - this.winRate)
+  }
+
+  private getPlFactor() {
+    this.plFactor = this.plRatio / (this.plRatio + 1)
+  }
+
   print(): any {
     console.log({
-      riskToReward: "1:" + this.riskToReward,
+      riskToReward: "1:" + this.rewardToRisk,
       winRate: this.winRate * 100 + "%",
-      profitToRiskRatio: this.timesProfited * this.riskToReward - this.timesLost + "R",
+      profitToRiskRatio: this.timesProfited * this.rewardToRisk - this.timesLost + "R",
       timesProfited: this.timesProfited,
       timesLost: this.timesLost,
       timesIndecisive: this.timesIndecisive,

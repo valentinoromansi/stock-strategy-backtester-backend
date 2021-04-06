@@ -14,7 +14,7 @@ const fundamentalsUrl = (symbol: string, apikey: string) =>
   `https://www.alphavantage.co/query?function=OVERVIEW&symbol=${symbol}&apikey=${apikey}`
 
 const APICallsPerMin = 5
-const intervals = ["15min", "1h"]
+const intervals = ["15min", "1h", "1day"]
 
 let apiKeysManager: ApiKeysManager = new ApiKeysManager()
 
@@ -96,21 +96,12 @@ export class ApiReceiver {
     if (!data || data.length === 0) throw "Data could not be writen to json file, data is undefined or empty"
     const dataAsJson = JSON.stringify(data)
     return new Promise((resolve) => {
-      const folderPath = `src/resources/json/stocks/${data[0].interval}`
+      const folderPath = `src/resources/stocks/${data[0].interval}`
       const fileName = `${data[0].symbol}-${data[data.length - 1].symbol}`
       if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath)
       fs.writeFile(`${folderPath}/${fileName}.json`, dataAsJson, (err: any) => {
         if (err) throw err
         resolve(true)
-      })
-    })
-  }
-
-  async readStockJsonData(): Promise<string> {
-    return new Promise((resolve) => {
-      fs.readFile("src/resources/json/stock-data-test.json", (err: any, data: any) => {
-        if (err) throw err
-        resolve(JSON.parse(data))
       })
     })
   }
