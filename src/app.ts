@@ -38,7 +38,7 @@ app.get("/backtest", async (req, res) => {
   console.log(strategy.description())
   let strategyBacktestResults = new StrategyBacktestResults(strategy.name, [])
   const fs = require("fs")
-  const stocksPath = `src/resources/json/stocks`
+  const stocksPath = `src/resources/stocks`
 
   const intervals: string[] = fs.readdirSync(stocksPath).map((file: string) => file)
   for (const interval of intervals) {
@@ -53,7 +53,7 @@ app.get("/backtest", async (req, res) => {
 
       // For stock read from current json file
       for (const stock of stocks) {
-        let backtestData = new BacktestResult(stock.symbol, 6)
+        let backtestData = new BacktestResult(stock, 1)
         stock.first().executeEachIteration(Direction.RIGHT, stock.length() - 1, (slice) => {
           // Execute backtest if pattern is valid for given slice
           if (isPatternValid(slice, strategy.rules)) backtestData.doBacktest(slice, strategy)
