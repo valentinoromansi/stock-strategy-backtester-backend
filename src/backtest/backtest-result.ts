@@ -14,10 +14,10 @@ enum TradeResult {
  * BacktestData object tests 1 stock against 1 strategy and generates backtest data
  */
 export class BacktestResult {
-  constructor(stock: StockData, riskToReward: number) {
+  constructor(stock: StockData, rewardToRisk: number) {
     this.stockName = stock.symbol
     this.interval = stock.interval
-    this.rewardToRisk = riskToReward
+    this.rewardToRisk = rewardToRisk
   }
 
   stockName: string

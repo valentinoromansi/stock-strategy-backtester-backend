@@ -58,17 +58,18 @@ app.post("/backtest", async (req, res) => {
       // For stock read from current json file
       for (const stock of stocks) {
         // If stock data is not valid skip it
-        const isValid: boolean = stock.symbol && stock.symbol && stock.slices && stock.slices.length > 0
+        const isValid: boolean = stock.symbol && stock.symbol && stock.slices && stock.slices?.length > 0
         if (!isValid) continue
-        // Do backtest for valid stock data
-        else console.log(stock.symbol, stock.interval, stock.slices.length)
-        let backtestData = new BacktestResult(stock, 1)
-        stock.first().executeEachIteration(Direction.RIGHT, stock.length() - 1, (slice) => {
-          // Execute backtest if pattern is valid for given slice
-          if (isPatternValid(slice, strategy.rules)) backtestData.doBacktest(slice, strategy)
-          return true
-        })
-        strategyBacktestResults.backtestResults.push(backtestData)
+        // Do backtest for valid stock data for every risk to reward value
+        for (const rewardToRisk of strategy.riskToRewardList) {
+          let backtestData = new BacktestResult(stock, rewardToRisk)
+          stock.first().executeEachIteration(Direction.RIGHT, stock.length() - 1, (slice) => {
+            // Execute backtest if pattern is valid for given slice
+            if (isPatternValid(slice, strategy.rules)) backtestData.doBacktest(slice, strategy)
+            return true
+          })
+          strategyBacktestResults.backtestResults.push(backtestData)
+        }
       }
     }
   }
