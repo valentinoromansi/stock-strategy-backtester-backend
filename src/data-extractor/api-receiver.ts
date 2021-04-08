@@ -24,7 +24,7 @@ export class ApiReceiver {
     return new Promise(async (resolve) => {
       // Get symbols of all existing stocks
       let symbols: string[] = await this.fetchStockSymbols()
-      symbols = symbols.slice(0, 7)
+      symbols = symbols.slice(0, 100)
       const symbolsGrouped = this.getListAsGroup(symbols, APICallsPerMin)
 
       for (const interval of intervals) {
