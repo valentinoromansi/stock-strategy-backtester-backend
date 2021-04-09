@@ -116,6 +116,7 @@ STRATEGY AS JSON:
 "type2": "CLOSE",
 "percent": 0.5
 },
+"riskToRewardList": [1, 2, 3],
 "rules": [
 {
 "valueData1": {
@@ -128,6 +129,19 @@ STRATEGY AS JSON:
 "id": 1,
 "period": null,
 "type1": "CLOSE"
+}
+},
+{
+"valueData1": {
+"id": 0,
+"period": null,
+"type1": "CLOSE"
+},
+"position": "ABOVE",
+"valueData2": {
+"id": 1,
+"period": null,
+"type1": "OPEN"
 }
 },
 {
@@ -149,60 +163,4 @@ STRATEGY AS JSON:
 }
 
 // PROFIT
-EXCEL:
-time,open,high,low,close
-2018-03-13T15:15:00Z,20,23,23,20
-2018-03-13T16:00:00Z,21,22,22,21
-2018-03-13T18:45:00Z,1,22,22,5
-2018-03-14T13:30:00Z,5,23,23,4
-2018-03-14T13:35:00Z,3,10,4,4
-BACKTEST:
-{
-testSample: 1,
-riskToReward: '1:1',
-winRate: '100%',
-profitToRiskRatio: '1R',
-timesProfited: 1,
-timesLost: 0,
-timesIndecisive: 0
-}
-
-// LOSS
-EXCEL:
-time,open,high,low,close
-2018-03-13T15:15:00Z,20,23,23,20
-2018-03-13T16:00:00Z,21,22,22,21
-2018-03-13T18:45:00Z,1,22,22,5
-2018-03-14T13:30:00Z,5,23,23,4
-2018-03-14T13:35:00Z,3,4,1,4
-BACKTEST:
-{
-testSample: 1,
-riskToReward: '1:1',
-winRate: '0%',
-profitToRiskRatio: '-1R',
-timesProfited: 0,
-timesLost: 1,
-timesIndecisive: 0
-}
-
-// INDECISIVE
-EXCEL:
-time,open,high,low,close
-2018-03-13T15:15:00Z,20,23,23,20
-2018-03-13T16:00:00Z,21,22,22,21
-2018-03-13T18:45:00Z,1,22,22,5
-2018-03-14T13:30:00Z,5,23,23,4
-2018-03-14T13:35:00Z,3,10,-10,4
-BACKTEST:
-{
-testSample: 0,
-riskToReward: '1:1',
-winRate: '0%',
-profitToRiskRatio: '0R',
-timesProfited: 0,
-timesLost: 0,
-timesIndecisive: 1
-}
-
 YAHOO stock data: https://finance.yahoo.com/quote/aapl/history?ltr=1

@@ -23,6 +23,7 @@ export class BacktestResult {
   stockName: string
   interval: string
   entryDatesOfProfitTrades: Date[] = []
+  entryDatesOfLossTrades: Date[] = []
   rewardToRisk: number
   timesProfited: number = 0
   timesLost: number = 0
@@ -52,8 +53,10 @@ export class BacktestResult {
       if (result === TradeResult.PROFIT) {
         this.timesProfited += 1
         this.entryDatesOfProfitTrades.push(slice0.date)
-      } else if (result === TradeResult.LOSS) this.timesLost += 1
-      else if (result === TradeResult.INDECISIVE) this.timesIndecisive += 1
+      } else if (result === TradeResult.LOSS) {
+        this.timesLost += 1
+        this.entryDatesOfLossTrades.push(slice0.date)
+      } else if (result === TradeResult.INDECISIVE) this.timesIndecisive += 1
       // If result value is profit, loss or indecisive then calculate win rate and stop further backtesting
       if (result !== TradeResult.NONE) {
         const profitsAndLoses = this.timesProfited + this.timesLost
