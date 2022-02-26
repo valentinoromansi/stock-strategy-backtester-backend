@@ -75,7 +75,8 @@ export class ApiReceiver {
   }
 
   /**
-   * Get list as list with groups of 5 items
+   * Get list as list with groups of @groupSize items
+   * Example for getListAsGroup([a, b, c, d, e, f, g, h], 3) -> [[a, b, c], [d, e, f] , [g, h]]
    */
   getListAsGroup(symbols: string[], groupSize: number): any {
     let listOfLists: any = []
