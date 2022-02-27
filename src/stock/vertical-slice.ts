@@ -2,7 +2,7 @@ import { Direction } from "../types/direction"
 import { TrendType } from "../types/trend-type"
 import { AttributeType } from "../types/attribute-type"
 import { emaValue, rsiValue, smaValue } from "../indicator/indicator-calculation"
-import { RelativeAttributeValueData, RelativeAttributeValueSource } from "../strategy/relative-attribute-data"
+import { RelativeSliceValueExtractionRule } from "../strategy/relative-attribute-data"
 
 /**
  * Vertical slice includes all attributes and values on given date
@@ -117,19 +117,13 @@ export class VerticalSlice {
    *    - 4 for new RelativeAttributeData({ type1: AttributeType.OPEN })
    * @param percent - values from -0.4 to 1.2 would mean -40% to 120%
    */
-  getValueRelativeToAttributes(valueData: RelativeAttributeValueData): number {
-    let ravSource: RelativeAttributeValueSource = valueData.getRelativeAttributeValueSource()
-    if (ravSource === RelativeAttributeValueSource.TYPE1) {
-      return this.getAttributeValue(valueData.type1)
-    } else if (ravSource === RelativeAttributeValueSource.TYPE1_TYPE2) {
-      let lowerAttributeValue = Math.min(
-        this.getAttributeValue(valueData.type1),
-        this.getAttributeValue(valueData.type2)
-      )
-      let attributesValueDistance = Math.abs(
-        this.getAttributeValue(valueData.type1) - this.getAttributeValue(valueData.type2)
-      )
-      return lowerAttributeValue + attributesValueDistance * valueData.percent
+  getValueRelativeToAttributes(rule: RelativeSliceValueExtractionRule): number {
+    if (rule.type1 && !rule.type2 && !rule.percent) {
+      return this.getAttributeValue(rule.type1)
+    } else if (rule.type1 && rule.type2 && rule.percent) {
+      let lowerAttributeValue = Math.min(this.getAttributeValue(rule.type1), this.getAttributeValue(rule.type2))
+      let attributesValueDistance = Math.abs(this.getAttributeValue(rule.type1) - this.getAttributeValue(rule.type2))
+      return lowerAttributeValue + attributesValueDistance * rule.percent
     }
   }
 }

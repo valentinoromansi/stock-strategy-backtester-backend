@@ -1,4 +1,4 @@
-import { RelativeAttributeValueData } from "./relative-attribute-data"
+import { RelativeSliceValueExtractionRule } from "./relative-attribute-data"
 import { Position } from "../types/position"
 
 /*
@@ -15,9 +15,9 @@ id defines entity moved from current price => entity[0] would be current entity,
 }
 */
 export class StrategyRule {
-  valueData1: RelativeAttributeValueData
+  valueData1: RelativeSliceValueExtractionRule
   position: Position
-  valueData2: RelativeAttributeValueData
+  valueData2: RelativeSliceValueExtractionRule
 
   constructor(init?: Partial<StrategyRule>) {
     Object.assign(this, init)
@@ -25,9 +25,9 @@ export class StrategyRule {
 
   static copy(strategyRule: StrategyRule): StrategyRule {
     return new StrategyRule({
-		  valueData1: RelativeAttributeValueData.copy(strategyRule.valueData1),
+		  valueData1: RelativeSliceValueExtractionRule.copy(strategyRule.valueData1),
 		  position: strategyRule.position,
-		  valueData2: RelativeAttributeValueData.copy(strategyRule.valueData2),
+		  valueData2: RelativeSliceValueExtractionRule.copy(strategyRule.valueData2),
     })
   }
 

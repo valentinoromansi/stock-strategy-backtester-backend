@@ -1,12 +1,10 @@
 import { AttributeType } from "../types/attribute-type"
 
-export enum RelativeAttributeValueSource {
-  TYPE1,
-  TYPE1_TYPE2
-}
-
 /**
- * Represents abstract definition of some connected slice attribute value(relative to given slice and id)
+ * Represents rule to get value of vertical slice attribute with id relative to given slice
+ * @param id - Tells to which vertical slice relative to given vertical slice does this rule for extracting value belongs to
+ * @param type2 - null means that rule applies to value of type1
+ * @param type2 - not null means that rule applies to value which is percentage between 2 slice attributes(type1, type2)
  * 1.) only type1: 
  *      - objects value is value of slice attribute[type1]
  * 2.) type1, type2, percent:
@@ -31,47 +29,32 @@ export enum RelativeAttributeValueSource {
     }
   - Value = value at 50% between attributes 'open' and 'close' of slice moved from given slice by 1
  * 
- */ 
-export class RelativeAttributeValueData {
+ */
+export class RelativeSliceValueExtractionRule {
   id: number
   type1: AttributeType
   type2: AttributeType
   percent: number
   period: number // used only for indicators(EMA9 -> period = 9)
 
-  constructor(init?: Partial<RelativeAttributeValueData>) {
+  constructor(init?: Partial<RelativeSliceValueExtractionRule>) {
     Object.assign(this, init)
   }
 
-  static copy(relativeAttributeValueData: RelativeAttributeValueData): RelativeAttributeValueData {
-    return new RelativeAttributeValueData({
+  static copy(relativeAttributeValueData: RelativeSliceValueExtractionRule): RelativeSliceValueExtractionRule {
+    return new RelativeSliceValueExtractionRule({
       id: relativeAttributeValueData.id,
       type1: relativeAttributeValueData.type1,
       type2: relativeAttributeValueData.type2,
       percent: relativeAttributeValueData.percent,
-      period: relativeAttributeValueData.period
+      period: relativeAttributeValueData.period,
     })
   }
 
-  getRelativeAttributeValueSource() : RelativeAttributeValueSource {
-    if(this.type1 && !this.type2 && !this.percent)
-      return RelativeAttributeValueSource.TYPE1
-    else if(this.type1 && this.type2 && this.percent)
-      return RelativeAttributeValueSource.TYPE1_TYPE2
-    else
-      throw('RelativeAttributeData.getRelativeAttributeValueSource thrown error')
-  }
-
   description(): string {
-    let source = this.getRelativeAttributeValueSource()
-    switch(source) {
-      case RelativeAttributeValueSource.TYPE1: 
-        return ('slice[' + this.id + '].' + this.type1)
-      case RelativeAttributeValueSource.TYPE1_TYPE2: 
-        return ('slice[' + this.id + '].(' + this.percent * 100 + '% of ' + this.type1 + '-' + this.type2 + ')')
-      default:
-        return 'RelativeAttributeValueData description could not be described'
-    }
+    if (this.type1 && !this.type2 && !this.percent) return "slice[" + this.id + "]." + this.type1
+    else if (this.type1 && this.type2 && this.percent)
+      return "slice[" + this.id + "].(" + this.percent * 100 + "% of " + this.type1 + "-" + this.type2 + ")"
+    else return "RelativeSliceValueExtractionRule description could not be described"
   }
-
 }

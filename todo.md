@@ -164,3 +164,38 @@ STRATEGY AS JSON:
 
 // PROFIT
 YAHOO stock data: https://finance.yahoo.com/quote/aapl/history?ltr=1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"timesProfited": 63,
+      "timesLost": 146,
+      "timesIndecisive": 55,
+      "winRate": 0.3014354066985646,
+      "plRatio": 1.2945205479452055,
+      "plFactor": 0.564179104477612,
