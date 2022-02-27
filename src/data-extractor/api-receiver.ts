@@ -6,6 +6,7 @@ import { waitFor } from "../util"
 
 const https = require("https")
 const fs = require("fs")
+const colors = require("colors")
 
 const symbolsUrl = "https://api.twelvedata.com/stocks?exchange=NASDAQ"
 const sliceDataUrl = (symbol: string, apikey: string, interval: string) =>
@@ -51,6 +52,7 @@ export class ApiReceiver {
 
   /**
    * Grouped fetching of stock vertical slice data and fundamentals for x num of stocks
+   * TODO: See if it is possible to fetch slice data and fundamentals for all symbols in async way instead of waiting foreach symbol to finish to proceed?
    */
   async fetchStockData(symbols: string[], interval: string): Promise<StockData[]> {
     let stockData: StockData[] = []
@@ -64,9 +66,10 @@ export class ApiReceiver {
         await Promise.all(promises).then((res) => {
           // Assign fetched vertical slice data
           const stock: StockData = res[0]
-          // Assign fetched fundamentals data
-          stock.fundamentals = res[1]
-          stockData.push(stock)
+          if (stock) {
+            stock.fundamentals = res[1]
+            stockData.push(stock)
+          }
         })
       }
       console.log(`\t ${symbols} > Fetching data... ended`)
@@ -153,8 +156,10 @@ export class ApiReceiver {
           res.on("end", () => {
             console.log(`\t\t ${symbol} > Fetching vertical slice data from server... ended`)
             const stock: StockData = this.jsonToVerticalSliceData(symbol, jsonResponse)
-            stock.slices = stock.slices.reverse()
-            stock.interval = interval
+            if (stock) {
+              stock.slices = stock.slices.reverse()
+              stock.interval = interval
+            }
             resolve(stock)
           })
         })
@@ -166,12 +171,13 @@ export class ApiReceiver {
 
   jsonToVerticalSliceData(symbol: string, json: string): StockData {
     const jsonObj = JSON.parse(json)
+    if (jsonObj.status !== "ok") {
+      console.log(colors.red(`\t\t ${symbol} > Error thrown when parsing json to object for symbol ${symbol}.`))
+      return null
+    }
     let stock: StockData = new StockData()
     try {
       console.log(`\t\t ${symbol} > Parsing data from json to object... started`)
-      if (jsonObj.status !== "ok") {
-        throw new Error(`Error thrown when parsing symbol ${symbol}. Json object status was not 'ok'.`)
-      }
       stock.symbol = symbol
       jsonObj.values.forEach((jsonSlice: any) => {
         stock.append(
