@@ -68,7 +68,7 @@ app.post("/backtest", async (req, res) => {
           let backtestData = new BacktestResult(stock, rewardToRisk)
           stock.first().executeEachIteration(Direction.RIGHT, stock.length() - 1, (slice) => {
             // Execute backtest if pattern is valid for given slice
-            if (isPatternValid(slice, strategy.rules)) backtestData.doBacktest(slice, strategy)
+            if (isPatternValid(slice, strategy.strategyConRules)) backtestData.doBacktest(slice, strategy)
             return true
           })
           strategyBacktestResults.backtestResults.push(backtestData)
@@ -77,5 +77,5 @@ app.post("/backtest", async (req, res) => {
     }
   }
   res.send(JSON.stringify(strategyBacktestResults))
-  console.log("/backtest ended...")
+  console.log(colors.green(`/backtest ended...`))
 })

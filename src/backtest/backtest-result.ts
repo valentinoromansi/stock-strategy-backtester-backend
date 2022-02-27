@@ -33,16 +33,17 @@ export class BacktestResult {
   plFactor: number = 0 // plFactor is normalized version of plRatio, 0-0.5 for loss trades, 0.5-1 for profit trades
 
   /**
-   * Checks will 'take profit' or 'stop loss' be hit first
+   * Loop through all slices starting from first
+   * Will 'take profit' or 'stop loss' be hit first
    */
   doBacktest(slice0: VerticalSlice, strategy: Strategy) {
-    // get enter value, if enter slice has no next slice conected then there is not enough data to start backtest
-    const enterSlice = slice0.getConnectedPrice(Direction.RIGHT, strategy.enterRad.id)
+    // get enter slice, if enter slice has no next slice conected then there is not enough data to start backtest
+    const enterSlice = slice0.getConnectedSlice(Direction.RIGHT, strategy.enterValueExRule.id)
     if (!enterSlice.next) return
-    const enter = enterSlice.getValueRelativeToAttributes(strategy.enterRad)
+    const enter = enterSlice.getValueRelativeToAttributes(strategy.enterValueExRule)
     // get stop loss value
-    const stopLossSlice = slice0.getConnectedPrice(Direction.RIGHT, strategy.stopLossRad.id)
-    const stopLoss = stopLossSlice.getValueRelativeToAttributes(strategy.stopLossRad)
+    const stopLossSlice = slice0.getConnectedSlice(Direction.RIGHT, strategy.stopLossValueExRule.id)
+    const stopLoss = stopLossSlice.getValueRelativeToAttributes(strategy.stopLossValueExRule)
     // if enter and stop loss value are the same then there is no way to know is it profit or loss
     if (enter === stopLoss) return
     // get take profit value

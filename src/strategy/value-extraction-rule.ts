@@ -30,31 +30,31 @@ import { AttributeType } from "../types/attribute-type"
   - Value = value at 50% between attributes 'open' and 'close' of slice moved from given slice by 1
  * 
  */
-export class RelativeSliceValueExtractionRule {
+export class ValueExtractionRule {
   id: number
-  type1: AttributeType
-  type2: AttributeType
+  attribute1: AttributeType
+  attribute2: AttributeType
   percent: number
   period: number // used only for indicators(EMA9 -> period = 9)
 
-  constructor(init?: Partial<RelativeSliceValueExtractionRule>) {
+  constructor(init?: Partial<ValueExtractionRule>) {
     Object.assign(this, init)
   }
 
-  static copy(relativeAttributeValueData: RelativeSliceValueExtractionRule): RelativeSliceValueExtractionRule {
-    return new RelativeSliceValueExtractionRule({
-      id: relativeAttributeValueData.id,
-      type1: relativeAttributeValueData.type1,
-      type2: relativeAttributeValueData.type2,
-      percent: relativeAttributeValueData.percent,
-      period: relativeAttributeValueData.period,
+  static copy(rule: ValueExtractionRule): ValueExtractionRule {
+    return new ValueExtractionRule({
+      id: rule.id,
+      attribute1: rule.attribute1,
+      attribute2: rule.attribute2,
+      percent: rule.percent,
+      period: rule.period,
     })
   }
 
   description(): string {
-    if (this.type1 && !this.type2 && !this.percent) return "slice[" + this.id + "]." + this.type1
-    else if (this.type1 && this.type2 && this.percent)
-      return "slice[" + this.id + "].(" + this.percent * 100 + "% of " + this.type1 + "-" + this.type2 + ")"
+    if (this.attribute1 && !this.attribute2 && !this.percent) return "slice[" + this.id + "]." + this.attribute1
+    else if (this.attribute1 && this.attribute2 && this.percent)
+      return "slice[" + this.id + "].(" + this.percent * 100 + "% of " + this.attribute1 + "-" + this.attribute2 + ")"
     else return "RelativeSliceValueExtractionRule description could not be described"
   }
 }
