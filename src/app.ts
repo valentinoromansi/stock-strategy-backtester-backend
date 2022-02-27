@@ -1,5 +1,5 @@
 import express, { json } from "express"
-import { StockData } from "./stock/stock-data"
+import { Stock } from "./stock/stock-data"
 import { Direction } from "./types/direction"
 import { BacktestResult } from "./backtest/backtest-result"
 import { isPatternValid } from "./pattern-validator/pattern-validator"
@@ -7,6 +7,8 @@ import { Strategy } from "./strategy/strategy"
 import { StrategyBacktestResults } from "./backtest/strategy-backtest-results"
 import { ApiReceiver } from "./data-extractor/api-receiver"
 import { JsonManager } from "./data-extractor/json-manager"
+
+const colors = require("colors")
 
 function setHeaders(res: any) {
   res.setHeader("Access-Control-Allow-Origin", "*")
@@ -25,12 +27,13 @@ app.use(cors())
 const apiReceiver: ApiReceiver = new ApiReceiver()
 
 // Get price data
+// ? Rename it to fetch-stock-data
 app.get("/update-stock-data", async (req: any, res: any) => {
   console.log("/update-stock-data called...")
   setHeaders(res)
-  const status: boolean = await apiReceiver.updateStockData()
+  const status: boolean = await apiReceiver.fetchStockData()
   res.send(status, null, 2)
-  console.log("/update-stock-data ended...")
+  console.log(colors.green(`/update-stock-data ended...`))
 })
 
 // Do backtest
@@ -46,14 +49,14 @@ app.post("/backtest", async (req, res) => {
 
   const intervals: string[] = fs.readdirSync(stocksPath).map((file: string) => file)
   for (const interval of intervals) {
-    let stocks: StockData[] = []
+    let stocks: Stock[] = []
     const fileNames: string[] = fs.readdirSync(`${stocksPath}/${interval}`).map((file: string) => file)
     for (const fileName of fileNames) {
-      const jsonData = fs.readFileSync(`${stocksPath}/${interval}/${fileName}`, {
+      const json = fs.readFileSync(`${stocksPath}/${interval}/${fileName}`, {
         encoding: "utf8",
         flag: "r",
       })
-      stocks = StockData.getParsedJsonData(jsonData)
+      stocks = Stock.fromJson(json)
 
       // For stock read from current json file
       for (const stock of stocks) {

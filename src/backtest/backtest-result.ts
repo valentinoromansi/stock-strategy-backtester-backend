@@ -1,7 +1,7 @@
 import { VerticalSlice } from "../stock/vertical-slice"
 import { Direction } from "../types/direction"
 import { Strategy } from "../strategy/strategy"
-import { StockData } from "../stock/stock-data"
+import { Stock } from "../stock/stock-data"
 
 enum TradeResult {
   PROFIT,
@@ -14,7 +14,7 @@ enum TradeResult {
  * BacktestData object tests 1 stock against 1 strategy and generates backtest data
  */
 export class BacktestResult {
-  constructor(stock: StockData, rewardToRisk: number) {
+  constructor(stock: Stock, rewardToRisk: number) {
     this.stockName = stock.symbol
     this.interval = stock.interval
     this.rewardToRisk = rewardToRisk

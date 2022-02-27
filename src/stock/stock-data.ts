@@ -2,7 +2,7 @@ import { VerticalSlice } from "./vertical-slice"
 import { Direction } from "../types/direction"
 import { Fundamentals } from "./fundamentals"
 
-export class StockData {
+export class Stock {
   constructor() {}
 
   symbol: string
@@ -31,20 +31,20 @@ export class StockData {
     return slice
   }
 
-  getSliceListWithoutPointers(): StockData {
-    let stockData: StockData = new StockData()
+  getSliceListWithoutPointers(): Stock {
+    let stock: Stock = new Stock()
     this.first().executeEachIteration(Direction.RIGHT, null, (slice) => {
-      stockData.append(new VerticalSlice(slice.date, slice.high, slice.close, slice.high, slice.low, slice.volume))
+      stock.append(new VerticalSlice(slice.date, slice.high, slice.close, slice.high, slice.low, slice.volume))
       return true
     })
-    return stockData
+    return stock
   }
 
-  static getParsedJsonData(json: string): StockData[] {
-    let stocksData: StockData[] = []
+  static fromJson(json: string): Stock[] {
+    let stocksData: Stock[] = []
     const objList = JSON.parse(json)
     for (const obj of objList) {
-      let stock: StockData = new StockData()
+      let stock: Stock = new Stock()
       stock.symbol = obj.symbol
       stock.interval = obj.interval
       stock.fundamentals = obj.fundamentals

@@ -46,7 +46,7 @@ export class ApiKeysManager {
   }
 
   //* Must be called after external API server registers that key is in use. Since we don't know it it's best to register time when response has been received
-  useApiKey(apiKey: ApiKey) {
+  markApiKeyAsUsed(apiKey: ApiKey) {
     apiKey.lastUsageTime = new Date()
   }
 }
