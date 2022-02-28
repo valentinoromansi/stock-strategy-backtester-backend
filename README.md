@@ -12,7 +12,7 @@
 
 ```mermaid
 graph TD
-   A[frontend] --> |body: Strategy| B
+   A[frontend] --> |request.body: Strategy| B
    B[backend->/backtest]-->D[foreach interval]
    D-->F[foreach stock in file]
    F-->G[foreach risk to reward]
@@ -20,7 +20,7 @@ graph TD
    H-->|loop|G
    G-->|loop|F
    F-->|loop|D
-   H-->|body: StrategyBacktestResults|A[frontend]
+   H-->|response.body: StrategyBacktestResults|A[frontend]
 
 ```
 
@@ -36,5 +36,5 @@ graph TD
 <b>ConditionalRule:</b>
 
 ```
-1. Tells if attribute value is BIGGER/SMALLLER then other attribute value
+1. Tells if attribute value is SAME/BIGGER/SMALLLER then other attribute value
 ```

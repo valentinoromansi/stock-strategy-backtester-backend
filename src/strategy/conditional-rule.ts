@@ -16,9 +16,9 @@ import { Position } from "../types/position"
   - Rule checks if value CLOSE of slice moved by 0 from given slice is BELOW value of clice EMA9 moved by 2 from given slice
 */
 export class ConditionalRule {
-  valueData1: ValueExtractionRule
+  valueExtractionRule1: ValueExtractionRule
   position: Position
-  valueData2: ValueExtractionRule
+  valueExtractionRule2: ValueExtractionRule
 
   constructor(init?: Partial<ConditionalRule>) {
     Object.assign(this, init)
@@ -26,13 +26,13 @@ export class ConditionalRule {
 
   static copy(strategyRule: ConditionalRule): ConditionalRule {
     return new ConditionalRule({
-      valueData1: ValueExtractionRule.copy(strategyRule.valueData1),
+      valueExtractionRule1: ValueExtractionRule.copy(strategyRule.valueExtractionRule1),
       position: strategyRule.position,
-      valueData2: ValueExtractionRule.copy(strategyRule.valueData2),
+      valueExtractionRule2: ValueExtractionRule.copy(strategyRule.valueExtractionRule2),
     })
   }
 
   description(): string {
-    return `${this.valueData1.description()} ${this.position} ${this.valueData2.description()}`
+    return `${this.valueExtractionRule1.description()} ${this.position} ${this.valueExtractionRule2.description()}`
   }
 }

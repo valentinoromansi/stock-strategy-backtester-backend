@@ -6,7 +6,7 @@ import { isPatternValid } from "./pattern-validator/pattern-validator"
 import { Strategy } from "./strategy/strategy"
 import { StrategyBacktestResults } from "./backtest/strategy-backtest-results"
 import { ApiReceiver } from "./data-extractor/api-receiver"
-import { JsonManager } from "./data-extractor/json-manager"
+import { readStocksJsonAndParse } from "./data-extractor/json-manager"
 
 const colors = require("colors")
 
@@ -56,7 +56,7 @@ app.post("/backtest", async (req, res) => {
         encoding: "utf8",
         flag: "r",
       })
-      stocks = Stock.fromJson(json)
+      stocks = readStocksJsonAndParse(json)
 
       // For stock read from current json file
       for (const stock of stocks) {
