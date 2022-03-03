@@ -3,22 +3,21 @@ import { ConditionalRule } from "./conditional-rule"
 
 /**
  * Strategy defines rules for:
- *    1. entering trade - @enterValueExRule
- *    2. exiting trade  - @stopLossValueExRule or @exitTradeCondRule
- *    3. strategy validity - @strategyConRules
- * There must be @riskToRewardList or @exitTradeCondRule defined but never both since combination of @enterValueExRule , @stopLossValueExRule and @riskToRewardList gives info when trade should be exited.
- * @enterValueExRule    - rule for when trade should be entered
- * @stopLossValueExRule - rule for when trade should end when hit loss is hit
+ *    1. strategy validity - @strategyConRules
+ *    2. entering trade - @enterValueExRule
+ *    3. exiting trade  - trade can exit when 'take profit' value is hit or when 'stop loss' is hit
+ *      - 'take profit' value is calculated using @enterValueExRule , @stopLossValueExRule and @riskToRewardList (enter + (enter - stopLoss) * riskToReward )
+ *      - 'stop loss' - @stopLossValueExRule
  * @strategyConRules    - list of rules between 2 slices that must be respected for strategy to be valid
- * @exitTradeCondRule   - rule for when trade should be exited
+ * @enterValueExRule    - rule for extracting value on which trade should be entered(when stock price goes over/below it), slice id must be known in advance
+ * @stopLossValueExRule - rule for extracting value on which on which hit loss is hit(when stock price goes over/below it)
  * @riskToRewardList    - list of risk to reward values that determines what will be the values of stop loss and exit
  */
 export class Strategy {
   name: string
+  strategyConRules: ConditionalRule[]
   enterValueExRule: ValueExtractionRule
   stopLossValueExRule: ValueExtractionRule
-  strategyConRules: ConditionalRule[]
-  exitTradeCondRule: ConditionalRule
   riskToRewardList: number[]
 
   constructor(init?: Partial<Strategy>) {
@@ -34,14 +33,12 @@ export class Strategy {
       strategyConRules: strategy.strategyConRules
         ? strategy.strategyConRules.map((rule) => ConditionalRule.copy(rule))
         : null,
-      exitTradeCondRule: strategy.exitTradeCondRule ? ConditionalRule.copy(strategy.exitTradeCondRule) : null,
     })
   }
 
   description(): string {
     return `enter: ${this.enterValueExRule?.description()}\n 
             stop loss: ${this.stopLossValueExRule?.description()}\n 
-            rules: ${this.strategyConRules?.map((rule) => "\n\t" + rule.description())}\n 
-            exit trade rule: : ${this.exitTradeCondRule?.description()}\n`
+            rules: ${this.strategyConRules?.map((rule) => "\n\t" + rule.description())}\n`
   }
 }
