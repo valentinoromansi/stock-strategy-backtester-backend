@@ -1,5 +1,5 @@
 import { VerticalSlice } from "../stock/vertical-slice"
-import { StockData } from "../stock/stock-data"
+import { Stock } from "../stock/stock-data"
 import { Fundamentals } from "../stock/fundamentals"
 import { ApiKeysManager, ApiKey } from "../data-extractor/api-key-manager"
 import { waitFor } from "../util"
@@ -19,29 +19,34 @@ const intervals = ["15min", "1h", "1day"]
 
 let apiKeysManager: ApiKeysManager = new ApiKeysManager()
 
+// ! API keys must be avaiable update of stock data start. If not program will not be executed correctly. For now wait time between execution must be 1 minute for keys to properly refresh.
+// TODO Implement check if all keys are avaiable at start, if not exit
 export class ApiReceiver {
-  async updateStockData(): Promise<boolean> {
+  async fetchStockData(): Promise<boolean> {
     console.log("TwelveDataExtractor.getStockData.... started")
     return new Promise(async (resolve) => {
       // Get symbols of all existing stocks
-      let symbols: string[] = await this.fetchStockSymbols()
-      symbols = symbols.slice(0, 100)
-      const symbolsGrouped = this.getListAsGroup(symbols, APICallsPerMin)
+      let allSymbols: string[] = await this.fetchStockSymbols()
+      // ! Limit symbols for development. Remove this line on production.
+      allSymbols = allSymbols.slice(0, 100)
+      const symbolsLists = this.getListAsFroupedLists(allSymbols, APICallsPerMin)
 
       for (const interval of intervals) {
         let stocksFetchedCounter = 0
-        for (const symbolsGroup of symbolsGrouped) {
-          // If no api keys are available wait until they become available
+        for (const symbols of symbolsLists) {
+          // If no api keys are available wait until one becomes available
           if (!apiKeysManager.isApiKeyAvailable()) await waitFor(apiKeysManager.getWaitingTimeInSec())
+          let apiKey: ApiKey = apiKeysManager.getAvailableApiKey()
           // Fetch data
-          let stockDataForSave: StockData[] = await this.fetchStockData(symbolsGroup, interval)
-          // set used api key as used
-          apiKeysManager.useApiKey(apiKeysManager.getAvailableApiKey())
+          let stocks: Stock[] = await this.fetchStock(symbols, interval, apiKey)
+          // Mark used api key as used
+          apiKeysManager.markApiKeyAsUsed(apiKeysManager.getAvailableApiKey())
           // Save fetched data
-          await this.writeStockJsonData(stockDataForSave)
-          console.log(`\t ${symbolsGroup} > Data saved!`)
-          stocksFetchedCounter += stockDataForSave.length
-          console.log(`${(stocksFetchedCounter / symbols.length) * 100}% stock data for ${interval} interval saved\n`)
+          await this.saveStocksJson(stocks)
+          stocksFetchedCounter += stocks.length
+          console.log(
+            `${(stocksFetchedCounter / allSymbols.length) * 100}% stock data for ${interval} interval saved\n`
+          )
         }
       }
 
@@ -54,26 +59,94 @@ export class ApiReceiver {
    * Grouped fetching of stock vertical slice data and fundamentals for x num of stocks
    * TODO: See if it is possible to fetch slice data and fundamentals for all symbols in async way instead of waiting foreach symbol to finish to proceed?
    */
-  async fetchStockData(symbols: string[], interval: string): Promise<StockData[]> {
-    let stockData: StockData[] = []
+  async fetchStock(symbols: string[], interval: string, apiKey: ApiKey): Promise<Stock[]> {
+    let stocks: Stock[] = []
     console.log(`\t ${symbols} > Fetching data... started`)
+    const promises: Promise<any>[] = []
     return new Promise(async (res) => {
-      for (const symbol of symbols) {
-        const promises: Promise<any>[] = [
-          this.fetchVerticalSliceData(symbol, interval),
-          this.fetchStockFundamentals(symbol),
-        ]
-        await Promise.all(promises).then((res) => {
-          // Assign fetched vertical slice data
-          const stock: StockData = res[0]
+      for (const symbol of symbols)
+        promises.push(
+          this.fetchVerticalSliceData(symbol, interval, apiKey),
+          this.fetchStockFundamentals(symbol, apiKey)
+        )
+      await Promise.all(promises).then((res: any[]) => {
+        // Assign fetched: 1. vertical slice data - [i], 2. fundamentals
+        for (let i = 0; i + 2 < res.length; i += 2) {
+          const stock: Stock = res[i]
+          // ! Stocks are being pushed even if fundamental are null
           if (stock) {
-            stock.fundamentals = res[1]
-            stockData.push(stock)
+            stock.fundamentals = res[i + 1]
+            stocks.push(stock)
           }
-        })
-      }
+        }
+      })
       console.log(`\t ${symbols} > Fetching data... ended`)
-      res(stockData)
+      res(stocks)
+    })
+  }
+
+  /**
+   * Fetch vertical slice data
+   */
+  async fetchVerticalSliceData(symbol: string, interval: string, apiKey: ApiKey): Promise<Stock> {
+    return new Promise(async (resolve) => {
+      console.log(`\t\t ${symbol} > Fetching vertical slice data from server... started`)
+      const url = sliceDataUrl(symbol, apiKey.verticalSlicesAPIKey, interval)
+      await https
+        .get(url, (res: any) => {
+          let jsonResponse: string = ""
+          res.on("data", (chunk: any) => {
+            jsonResponse += chunk
+          })
+
+          res.on("end", () => {
+            console.log(`\t\t ${symbol} > Fetching vertical slice data from server... ended`)
+            const stock: Stock = this.jsonToVerticalSliceData(symbol, jsonResponse)
+            if (stock) {
+              stock.slices = stock.slices.reverse()
+              stock.interval = interval
+            }
+            resolve(stock)
+          })
+        })
+        .on("error", (err: any) => {
+          console.log("Error: " + err.message)
+        })
+    })
+  }
+
+  /**
+   * Stock fundamentals fetch
+   */
+  async fetchStockFundamentals(symbol: string, apiKey: ApiKey): Promise<Fundamentals> {
+    return new Promise(async (resolve) => {
+      console.log(`\t\t ${symbol} > Fetching fundamentals data from server.... started`)
+      const url = fundamentalsUrl(symbol, apiKey.fundamentalsAPIKey)
+      await https
+        .get(url, (res: any) => {
+          let responseJson: string = ""
+          res.on("data", (chunk: any) => {
+            responseJson += chunk
+          })
+
+          res.on("end", () => {
+            console.log(`\t\t ${symbol} > Fetching fundamentals data from server.... ended`)
+            const jsonObj = JSON.parse(responseJson)
+            const fundamentals = new Fundamentals(
+              jsonObj.AssetType,
+              jsonObj.Sector,
+              jsonObj.Industry,
+              jsonObj.MarketCapitalization,
+              jsonObj.SharesOutstanding,
+              jsonObj.SharesFloat,
+              jsonObj.SharesShort
+            )
+            resolve(fundamentals)
+          })
+        })
+        .on("error", (err: any) => {
+          console.log("Error: " + err.message)
+        })
     })
   }
 
@@ -81,8 +154,8 @@ export class ApiReceiver {
    * Get list as list with groups of @groupSize items
    * Example for getListAsGroup([a, b, c, d, e, f, g, h], 3) -> [[a, b, c], [d, e, f] , [g, h]]
    */
-  getListAsGroup(symbols: string[], groupSize: number): any {
-    let listOfLists: any = []
+  getListAsFroupedLists(symbols: string[], groupSize: number): string[][] {
+    let listOfLists: string[][] = []
     symbols.forEach((symbol, i) => {
       if (i % groupSize === 0) {
         const to = Math.min(i + groupSize, symbols.length)
@@ -96,15 +169,15 @@ export class ApiReceiver {
    * JSON reading writing
    */
 
-  async writeStockJsonData(data: StockData[]): Promise<boolean> {
-    if (!data || data.length === 0) throw "Data could not be writen to json file, data is undefined or empty"
-    const dataAsJson = JSON.stringify(data)
+  async saveStocksJson(stocks: Stock[]): Promise<boolean> {
+    if (!stocks || stocks.length === 0) throw "Data could not be writen to json file, data is undefined or empty"
     return new Promise((resolve) => {
-      const folderPath = `src/resources/stocks/${data[0].interval}`
-      const fileName = `${data[0].symbol}-${data[data.length - 1].symbol}`
+      const folderPath = `src/resources/stocks/${stocks[0].interval}`
+      const fileName = `${stocks[0].symbol}-${stocks[stocks.length - 1].symbol}`
       if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath)
-      fs.writeFile(`${folderPath}/${fileName}.json`, dataAsJson, (err: any) => {
+      fs.writeFile(`${folderPath}/${fileName}.json`, JSON.stringify(stocks), (err: any) => {
         if (err) throw err
+        console.log(colors.green(`\t ${stocks.map((stock) => stock.symbol)} > Data saved!`))
         resolve(true)
       })
     })
@@ -113,7 +186,6 @@ export class ApiReceiver {
   /**
    * Stock symbols fetch
    */
-
   async fetchStockSymbols(): Promise<string[]> {
     return new Promise(async (resolve) => {
       console.log(`\tFetching symbols from server.... started`)
@@ -138,57 +210,19 @@ export class ApiReceiver {
     })
   }
 
-  /**
-   * Stock vertical slice data fetch
-   */
-
-  async fetchVerticalSliceData(symbol: string, interval: string): Promise<StockData> {
-    return new Promise(async (resolve) => {
-      console.log(`\t\t ${symbol} > Fetching vertical slice data from server... started`)
-      const url = sliceDataUrl(symbol, apiKeysManager.getAvailableApiKey().verticalSlicesAPIKey, interval)
-      await https
-        .get(url, (res: any) => {
-          let jsonResponse: string = ""
-          res.on("data", (chunk: any) => {
-            jsonResponse += chunk
-          })
-
-          res.on("end", () => {
-            console.log(`\t\t ${symbol} > Fetching vertical slice data from server... ended`)
-            const stock: StockData = this.jsonToVerticalSliceData(symbol, jsonResponse)
-            if (stock) {
-              stock.slices = stock.slices.reverse()
-              stock.interval = interval
-            }
-            resolve(stock)
-          })
-        })
-        .on("error", (err: any) => {
-          console.log("Error: " + err.message)
-        })
-    })
-  }
-
-  jsonToVerticalSliceData(symbol: string, json: string): StockData {
+  jsonToVerticalSliceData(symbol: string, json: string): Stock {
     const jsonObj = JSON.parse(json)
     if (jsonObj.status !== "ok") {
       console.log(colors.red(`\t\t ${symbol} > Error thrown when parsing json to object for symbol ${symbol}.`))
       return null
     }
-    let stock: StockData = new StockData()
+    let stock: Stock = new Stock()
     try {
       console.log(`\t\t ${symbol} > Parsing data from json to object... started`)
       stock.symbol = symbol
-      jsonObj.values.forEach((jsonSlice: any) => {
+      jsonObj.values.forEach((slice: any) => {
         stock.append(
-          new VerticalSlice(
-            new Date(jsonSlice.datetime),
-            jsonSlice.open,
-            jsonSlice.close,
-            jsonSlice.high,
-            jsonSlice.low,
-            jsonSlice.volume
-          ),
+          new VerticalSlice(new Date(slice.datetime), slice.open, slice.close, slice.high, slice.low, slice.volume),
           false
         )
       })
@@ -198,41 +232,5 @@ export class ApiReceiver {
     console.log(`\t\t ${symbol} > Parsing data from json to object... ended`)
 
     return stock
-  }
-
-  /**
-   * Stock fundamentals fetch
-   */
-
-  async fetchStockFundamentals(symbol: string): Promise<Fundamentals> {
-    return new Promise(async (resolve) => {
-      console.log(`\t\t ${symbol} > Fetching fundamentals data from server.... started`)
-      const url = fundamentalsUrl(symbol, apiKeysManager.getAvailableApiKey().fundamentalsAPIKey)
-      await https
-        .get(url, (res: any) => {
-          let jsonResponse: string = ""
-          res.on("data", (chunk: any) => {
-            jsonResponse += chunk
-          })
-
-          res.on("end", () => {
-            console.log(`\t\t ${symbol} > Fetching fundamentals data from server.... ended`)
-            const jsonObj = JSON.parse(jsonResponse)
-            const fundamentals = new Fundamentals(
-              jsonObj.AssetType,
-              jsonObj.Sector,
-              jsonObj.Industry,
-              jsonObj.MarketCapitalization,
-              jsonObj.SharesOutstanding,
-              jsonObj.SharesFloat,
-              jsonObj.SharesShort
-            )
-            resolve(fundamentals)
-          })
-        })
-        .on("error", (err: any) => {
-          console.log("Error: " + err.message)
-        })
-    })
   }
 }

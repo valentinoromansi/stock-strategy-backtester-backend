@@ -1,12 +1,23 @@
-import { RelativeAttributeValueData } from "./relative-attribute-data"
-import { StrategyRule } from "./strategy-rule"
+import { ValueExtractionRule } from "./value-extraction-rule"
+import { ConditionalRule } from "./conditional-rule"
 
+/**
+ * Strategy defines rules for:
+ *    1. strategy validity - @strategyConRules
+ *    2. entering trade - @enterValueExRule
+ *    3. exiting trade  - trade can exit when 'take profit' value is hit or when 'stop loss' is hit
+ *      - 'take profit' value is calculated using @enterValueExRule , @stopLossValueExRule and @riskToRewardList (enter + (enter - stopLoss) * riskToReward )
+ *      - 'stop loss' - @stopLossValueExRule
+ * @strategyConRules    - list of rules between 2 slices that must be respected for strategy to be valid
+ * @enterValueExRule    - rule for extracting value on which trade should be entered(when stock price goes over/below it), slice id must be known in advance
+ * @stopLossValueExRule - rule for extracting value on which on which hit loss is hit(when stock price goes over/below it)
+ * @riskToRewardList    - list of risk to reward values that determines what will be the values of stop loss and exit
+ */
 export class Strategy {
   name: string
-  enterRad: RelativeAttributeValueData
-  stopLossRad: RelativeAttributeValueData // can be null if exitTradeRule is defined
-  rules: StrategyRule[]
-  exitTradeRule: StrategyRule // can be null if stop loss is pre defined
+  strategyConRules: ConditionalRule[]
+  enterValueExRule: ValueExtractionRule
+  stopLossValueExRule: ValueExtractionRule
   riskToRewardList: number[]
 
   constructor(init?: Partial<Strategy>) {
@@ -16,28 +27,18 @@ export class Strategy {
   static copy(strategy: Strategy): Strategy {
     return new Strategy({
       name: strategy.name,
-      enterRad: strategy.enterRad ? RelativeAttributeValueData.copy(strategy.enterRad) : null,
-      stopLossRad: strategy.stopLossRad ? RelativeAttributeValueData.copy(strategy.stopLossRad) : null,
+      enterValueExRule: strategy.enterValueExRule ? ValueExtractionRule.copy(strategy.enterValueExRule) : null,
+      stopLossValueExRule: strategy.stopLossValueExRule ? ValueExtractionRule.copy(strategy.stopLossValueExRule) : null,
       riskToRewardList: strategy.riskToRewardList,
-      rules: strategy.rules ? strategy.rules.map((rule) => StrategyRule.copy(rule)) : null,
-      exitTradeRule: strategy.exitTradeRule ? StrategyRule.copy(strategy.exitTradeRule) : null,
+      strategyConRules: strategy.strategyConRules
+        ? strategy.strategyConRules.map((rule) => ConditionalRule.copy(rule))
+        : null,
     })
   }
 
   description(): string {
-    return (
-      "enter: " +
-      this.enterRad?.description() +
-      "\n" +
-      "stop loss: " +
-      this.stopLossRad?.description() +
-      "\n" +
-      "rules: " +
-      this.rules?.map((rule) => "\n\t" + rule.description()) +
-      "\n" +
-      "exit trade rule: " +
-      this.exitTradeRule?.description() +
-      "\n"
-    )
+    return `enter: ${this.enterValueExRule?.description()}\n 
+            stop loss: ${this.stopLossValueExRule?.description()}\n 
+            rules: ${this.strategyConRules?.map((rule) => "\n\t" + rule.description())}\n`
   }
 }

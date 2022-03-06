@@ -1,5 +1,5 @@
 export const yml: {
-  excelPath: string
+  stocksPath: string
 } = {
-  excelPath: "src/resources/excels",
+  stocksPath: "src/resources/stocks",
 }

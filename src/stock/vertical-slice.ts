@@ -2,7 +2,7 @@ import { Direction } from "../types/direction"
 import { TrendType } from "../types/trend-type"
 import { AttributeType } from "../types/attribute-type"
 import { emaValue, rsiValue, smaValue } from "../indicator/indicator-calculation"
-import { RelativeAttributeValueData, RelativeAttributeValueSource } from "../strategy/relative-attribute-data"
+import { ValueExtractionRule } from "../strategy/value-extraction-rule"
 
 /**
  * Vertical slice includes all attributes and values on given date
@@ -34,7 +34,7 @@ export class VerticalSlice {
     return new VerticalSlice(new Date(data.time), +data.open, +data.close, +data.high, +data.low, +data.volume)
   }
 
-  hasConnectedPrices(dir: Direction, iterNum: number): boolean {
+  hasConnectedSlices(dir: Direction, iterNum: number): boolean {
     if (iterNum == 0) return false
     let curSlice: VerticalSlice = this
     for (let i = 0; i < iterNum; ++i) {
@@ -45,9 +45,9 @@ export class VerticalSlice {
     return true
   }
 
-  getConnectedPrice(dir: Direction, iterNum: number): VerticalSlice {
+  getConnectedSlice(dir: Direction, iterNum: number): VerticalSlice {
     if (iterNum == 0) return this
-    if (!this.hasConnectedPrices(dir, iterNum) || iterNum < 0) return null
+    if (!this.hasConnectedSlices(dir, iterNum) || iterNum < 0) return null
     let curSlice: VerticalSlice = this
     for (let i = 0; i < iterNum; ++i) {
       curSlice = dir == Direction.LEFT ? curSlice.prev : curSlice.next
@@ -60,7 +60,7 @@ export class VerticalSlice {
    * If iteration number is not specified it iterates in given direction until last slice is reached
    */
   executeEachIteration(dir: Direction, iterNum: number, onEachIter: (p: VerticalSlice) => boolean) {
-    if (iterNum && (!this.hasConnectedPrices(dir, iterNum) || iterNum <= 0)) return
+    if (iterNum && (!this.hasConnectedSlices(dir, iterNum) || iterNum <= 0)) return
     let curSlice: VerticalSlice = this
     let continueIteration = true
     // For defined iteraton num. run onEachIter that many times
@@ -117,19 +117,18 @@ export class VerticalSlice {
    *    - 4 for new RelativeAttributeData({ type1: AttributeType.OPEN })
    * @param percent - values from -0.4 to 1.2 would mean -40% to 120%
    */
-  getValueRelativeToAttributes(valueData: RelativeAttributeValueData): number {
-    let ravSource: RelativeAttributeValueSource = valueData.getRelativeAttributeValueSource()
-    if (ravSource === RelativeAttributeValueSource.TYPE1) {
-      return this.getAttributeValue(valueData.type1)
-    } else if (ravSource === RelativeAttributeValueSource.TYPE1_TYPE2) {
+  getValueRelativeToAttributes(rule: ValueExtractionRule): number {
+    if (rule.attribute1 && !rule.attribute2 && !rule.percent) {
+      return this.getAttributeValue(rule.attribute1)
+    } else if (rule.attribute1 && rule.attribute2 && rule.percent) {
       let lowerAttributeValue = Math.min(
-        this.getAttributeValue(valueData.type1),
-        this.getAttributeValue(valueData.type2)
+        this.getAttributeValue(rule.attribute1),
+        this.getAttributeValue(rule.attribute2)
       )
       let attributesValueDistance = Math.abs(
-        this.getAttributeValue(valueData.type1) - this.getAttributeValue(valueData.type2)
+        this.getAttributeValue(rule.attribute1) - this.getAttributeValue(rule.attribute2)
       )
-      return lowerAttributeValue + attributesValueDistance * valueData.percent
+      return lowerAttributeValue + attributesValueDistance * rule.percent
     }
   }
 }

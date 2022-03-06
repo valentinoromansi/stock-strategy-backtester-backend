@@ -1,7 +1,7 @@
 import { VerticalSlice } from "../stock/vertical-slice"
 import { Direction } from "../types/direction"
 import { Strategy } from "../strategy/strategy"
-import { StockData } from "../stock/stock-data"
+import { Stock } from "../stock/stock-data"
 
 enum TradeResult {
   PROFIT,
@@ -14,7 +14,7 @@ enum TradeResult {
  * BacktestData object tests 1 stock against 1 strategy and generates backtest data
  */
 export class BacktestResult {
-  constructor(stock: StockData, rewardToRisk: number) {
+  constructor(stock: Stock, rewardToRisk: number) {
     this.stockName = stock.symbol
     this.interval = stock.interval
     this.rewardToRisk = rewardToRisk
@@ -29,27 +29,29 @@ export class BacktestResult {
   timesLost: number = 0
   timesIndecisive: number = 0
   winRate: number = 0
-  plRatio: number = 0 //  plRatio=5x, for each x lost, 5x are gained as profit
-  plFactor: number = 0 // plFactor is normalized version of plRatio, 0-0.5 for loss trades, 0.5-1 for profit trades
+  plRatio: number = 0 //  plRatio=5, for each 1$ lost, 5$ are gained
+  plFactor: number = 0 // plFactor is normalized version of plRatio, 0-0.5 for loss trades, 0.5-1 for profit trades. 0 -> -infinity, 1 --> +infinity
 
   /**
-   * Checks will 'take profit' or 'stop loss' be hit first
+   * Loop through all slices starting from first
+   * Checks if 'take profit' or 'stop loss' will be hit first
+   * @slice0 - First vertical slice of a stock
    */
   doBacktest(slice0: VerticalSlice, strategy: Strategy) {
-    // get enter value, if enter slice has no next slice conected then there is not enough data to start backtest
-    const enterSlice = slice0.getConnectedPrice(Direction.RIGHT, strategy.enterRad.id)
+    // get enter slice, if enter slice has no next slice conected then there is not enough data to start backtest
+    const enterSlice = slice0.getConnectedSlice(Direction.RIGHT, strategy.enterValueExRule.id)
     if (!enterSlice.next) return
-    const enter = enterSlice.getValueRelativeToAttributes(strategy.enterRad)
+    const enterVal = enterSlice.getValueRelativeToAttributes(strategy.enterValueExRule)
     // get stop loss value
-    const stopLossSlice = slice0.getConnectedPrice(Direction.RIGHT, strategy.stopLossRad.id)
-    const stopLoss = stopLossSlice.getValueRelativeToAttributes(strategy.stopLossRad)
+    const stopLossSlice = slice0.getConnectedSlice(Direction.RIGHT, strategy.stopLossValueExRule.id)
+    const stopLossVal = stopLossSlice.getValueRelativeToAttributes(strategy.stopLossValueExRule)
     // if enter and stop loss value are the same then there is no way to know is it profit or loss
-    if (enter === stopLoss) return
+    if (enterVal === stopLossVal) return
     // get take profit value
-    const takeProfit = enter + Math.abs(enter - stopLoss) * this.rewardToRisk
+    const takeProfitVal = enterVal + Math.abs(enterVal - stopLossVal) * this.rewardToRisk
     // check if profit/loss value is hit for each slice on the right
     enterSlice.next.executeEachIteration(Direction.RIGHT, null, (slice) => {
-      let result: TradeResult = this.getTradeResult(takeProfit, stopLoss, slice.high, slice.low)
+      let result: TradeResult = this.getTradeResult(takeProfitVal, stopLossVal, slice.high, slice.low)
       if (result === TradeResult.PROFIT) {
         this.timesProfited += 1
         this.entryDatesOfProfitTrades.push(slice0.date)
