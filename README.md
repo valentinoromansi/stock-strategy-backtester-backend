@@ -20,7 +20,7 @@ graph TD
    H-->|loop|G
    G-->|loop|F
    F-->|loop|D
-   H-->|response.body: StrategyBacktestResults|A[frontend]
+   H-->|response.body: StrategyReport|A[frontend]
 
 ```
 

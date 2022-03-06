@@ -1,14 +1,16 @@
-import express, { json } from "express"
+import express from "express"
+import colors from "colors"
+import fs from "fs"
+var cors = require("cors")
 import { Stock } from "./stock/stock-data"
 import { Direction } from "./types/direction"
 import { BacktestResult } from "./backtest/backtest-result"
 import { isPatternValid } from "./pattern-validator/pattern-validator"
 import { Strategy } from "./strategy/strategy"
-import { StrategyBacktestResults } from "./backtest/strategy-backtest-results"
+import { StrategyReport } from "./backtest/strategy-backtest-results"
 import { ApiReceiver } from "./data-extractor/api-receiver"
 import { readStocksJsonAndParse } from "./data-extractor/json-manager"
-
-const colors = require("colors")
+import { yml } from "./yml/yml"
 
 function setHeaders(res: any) {
   res.setHeader("Access-Control-Allow-Origin", "*")
@@ -21,13 +23,11 @@ function setHeaders(res: any) {
 export const app = express()
 app.use(express.json())
 // Cors is used for this reason: https://dev.to/p0oker/why-is-my-browser-sending-an-options-http-request-instead-of-post-5621
-var cors = require("cors")
 app.use(cors())
 
 const apiReceiver: ApiReceiver = new ApiReceiver()
 
 // Get price data
-// ? Rename it to fetch-stock-data
 app.get("/update-stock-data", async (req: any, res: any) => {
   console.log("/update-stock-data called...")
   setHeaders(res)
@@ -37,24 +37,23 @@ app.get("/update-stock-data", async (req: any, res: any) => {
 })
 
 // Do backtest
+// ? Add validations for req object before calling 'Strategy.copy(req.body)'
+// ? import { validate, Matches, IsDefined } from "class-validator";
+// ? import { plainToClass, Expose } from "class-transformer";
 app.post("/backtest", async (req, res) => {
   console.log("/backtest called...")
   setHeaders(res)
   console.log("Request: ", req.body)
-  const strategy: Strategy = Strategy.copy(req.body)
+  const strategy = Strategy.copy(req.body)
   console.log(strategy.description())
-  let strategyBacktestResults = new StrategyBacktestResults(strategy.name, [])
-  const fs = require("fs")
-  const stocksPath = `src/resources/stocks`
-
-  const intervals: string[] = fs.readdirSync(stocksPath).map((file: string) => file)
+  let strategyReport = new StrategyReport(strategy.name, [])
+  const intervals: string[] = fs.readdirSync(yml.stocksPath).map((file: string) => file)
   for (const interval of intervals) {
     let stocks: Stock[] = []
-    const fileNames: string[] = fs.readdirSync(`${stocksPath}/${interval}`).map((file: string) => file)
+    const fileNames: string[] = fs.readdirSync(`${yml.stocksPath}/${interval}`).map((file: string) => file)
     for (const fileName of fileNames) {
-      const json = fs.readFileSync(`${stocksPath}/${interval}/${fileName}`, {
+      const json = fs.readFileSync(`${yml.stocksPath}/${interval}/${fileName}`, {
         encoding: "utf8",
-        flag: "r",
       })
       stocks = readStocksJsonAndParse(json)
 
@@ -65,17 +64,17 @@ app.post("/backtest", async (req, res) => {
         if (!isValid) continue
         // Do backtest for valid stock data for every risk to reward value
         for (const rewardToRisk of strategy.riskToRewardList) {
-          let backtestData = new BacktestResult(stock, rewardToRisk)
+          let backtestResult = new BacktestResult(stock, rewardToRisk)
           stock.first().executeEachIteration(Direction.RIGHT, stock.length() - 1, (slice) => {
             // Execute backtest if pattern is valid for given slice
-            if (isPatternValid(slice, strategy.strategyConRules)) backtestData.doBacktest(slice, strategy)
+            if (isPatternValid(slice, strategy.strategyConRules)) backtestResult.doBacktest(slice, strategy)
             return true
           })
-          strategyBacktestResults.backtestResults.push(backtestData)
+          strategyReport.backtestResults.push(backtestResult)
         }
       }
     }
   }
-  res.send(JSON.stringify(strategyBacktestResults))
+  res.send(JSON.stringify(strategyReport))
   console.log(colors.green(`/backtest ended...`))
 })
