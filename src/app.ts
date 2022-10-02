@@ -9,7 +9,7 @@ import { isPatternValid } from "./pattern-validator/pattern-validator"
 import { Strategy } from "./strategy/strategy"
 import { StrategyReport } from "./backtest/strategy-backtest-results"
 import { ApiReceiver } from "./data-extractor/api-receiver"
-import { readStocksJsonAndParse, readStrategiesJsonAndParse, saveStrategyJson } from "./data-extractor/json-manager"
+import { readStocksJsonAndParse, readStrategiesJsonAndParse, readStrategyReportsJsonAndParse, saveStrategyJson, saveStrategyReportsJson } from "./data-extractor/json-manager"
 import { yml } from "./yml/yml"
 
 function setHeaders(res: any) {
@@ -57,46 +57,69 @@ app.get("/get-strategies", async (req: any, res: any) => {
   res.send(JSON.stringify(strategies) )
 })
 
-// Do backtest
+// Do backtest and update strategy reports
+// If strategyName is in request body then do backtest and update only that strategy report. If not then do it for all.
 // ? Add validations for req object before calling 'Strategy.copy(req.body)'
 // ? import { validate, Matches, IsDefined } from "class-validator";
 // ? import { plainToClass, Expose } from "class-transformer";
-app.post("/backtest", async (req, res) => {
-  console.log("/backtest called...")
+app.post("/update-strategy-reports", async (req, res) => {
+  console.log("/update-strategy-reports called...")
   setHeaders(res)
   console.log("Request: ", req.body)
-  const strategy = Strategy.copy(req.body)
-  console.log(strategy.description())
-  // ! Read all strategies from strategies.json and return list of reports insted of 1 report
-  let strategyReport = new StrategyReport(strategy.name, [])
-  const intervals: string[] = fs.readdirSync(yml.stocksPath).map((file: string) => file)
-  for (const interval of intervals) {
-    let stocks: Stock[] = []
-    const fileNames: string[] = fs.readdirSync(`${yml.stocksPath}/${interval}`).map((file: string) => file)
-    for (const fileName of fileNames) {
-      const json = fs.readFileSync(`${yml.stocksPath}/${interval}/${fileName}`, {
-        encoding: "utf8",
-      })
-      stocks = readStocksJsonAndParse(json)
-
-      // For stock read from current json file
-      for (const stock of stocks) {
-        // If stock data is not valid skip it
-        const isValid: boolean = stock.symbol && stock.symbol && stock.slices && stock.slices?.length > 0
-        if (!isValid) continue
-        // Do backtest for valid stock data for every risk to reward value
-        for (const rewardToRisk of strategy.riskToRewardList) {
-          let backtestResult = new BacktestResult(stock, rewardToRisk)
-          stock.first().executeEachIteration(Direction.RIGHT, stock.length() - 1, (slice) => {
-            // Execute backtest if pattern is valid for given slice
-            if (isPatternValid(slice, strategy.strategyConRules)) backtestResult.doBacktest(slice, strategy)
-            return true
-          })
-          strategyReport.backtestResults.push(backtestResult)
+  let strategies: Strategy[] = await readStrategiesJsonAndParse()
+  if(req?.body?.strategyName !== undefined)
+  strategies = strategies.filter(obj => obj.name === req.body.strategyName)
+  
+  console.log(strategies)
+  
+  let strategyReports: StrategyReport[] = []
+  strategies.forEach(strategy => {
+    console.log(strategy.description())
+    // ! Read all strategies from strategies.json and return list of reports insted of 1 report
+    let strategyReport = new StrategyReport(strategy.name, [])
+    const intervals: string[] = fs.readdirSync(yml.stocksPath).map((file: string) => file)
+    for (const interval of intervals) {
+      let stocks: Stock[] = []
+      const fileNames: string[] = fs.readdirSync(`${yml.stocksPath}/${interval}`).map((file: string) => file)
+      for (const fileName of fileNames) {
+        const json = fs.readFileSync(`${yml.stocksPath}/${interval}/${fileName}`, {
+          encoding: "utf8",
+        })
+        stocks = readStocksJsonAndParse(json)  
+        // For stock read from current json file
+        for (const stock of stocks) {
+          // If stock data is not valid skip it
+          const isValid: boolean = stock.symbol && stock.symbol && stock.slices && stock.slices?.length > 0
+          if (!isValid) continue
+          // Do backtest for valid stock data for every risk to reward value
+          for (const rewardToRisk of strategy.riskToRewardList) {
+            let backtestResult = new BacktestResult(stock, rewardToRisk)
+            stock.first().executeEachIteration(Direction.RIGHT, stock.length() - 1, (slice) => {
+              // Execute backtest if pattern is valid for given slice
+              if (isPatternValid(slice, strategy.strategyConRules)) backtestResult.doBacktest(slice, strategy)
+              return true
+            })
+            strategyReport.backtestResults.push(backtestResult)            
+          }
         }
       }
     }
-  }
-  res.send(JSON.stringify(strategyReport))
-  console.log(colors.green(`/backtest ended...`))
+    strategyReports.push(strategyReport)
+  });
+  // Save updated strategy reports as JSON
+  await saveStrategyReportsJson(strategyReports)
+
+  // Send back all strategy reports including updated ones
+  let newStrategyReports: StrategyReport[] = await readStrategyReportsJsonAndParse()
+  res.send(JSON.stringify(newStrategyReports))
+  console.log(colors.green(`/update-strategy-reports ended...`))
+})
+
+// Save strategy in resurces/strategies.json
+app.get("/get-strategy-reports", async (req: any, res: any) => {
+  console.log("/get-strategy-reports called...")
+  setHeaders(res)
+  let strategyReports: StrategyReport[] = await readStrategyReportsJsonAndParse()
+  console.log(colors.green(`/get-strategy-reports ended...`))
+  res.send(JSON.stringify(strategyReports))
 })
