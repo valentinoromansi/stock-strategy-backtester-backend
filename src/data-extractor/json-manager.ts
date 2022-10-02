@@ -36,42 +36,39 @@ export async function readStrategiesJsonAndParse(): Promise<Strategy[]> {
   return new Promise(resolve => {
     const filePath = `${yml.strategiesFilePath}`
     if (!fs.existsSync(filePath)) {
-      console.log(colors.red(`File ${yml.strategiesFilePath} could not be read!`))
-      resolve(null)
+      console.log(colors.red(`File ${yml.strategiesFilePath} does not exist!`))
+      resolve([])
     }
     else {
       let json = fs.readFileSync(`${yml.strategiesFilePath}`, {
         encoding: "utf8",
       })
-      let strategies: Strategy[] = JSON.parse(json)
+      let strategies: Strategy[]
+      try {
+        strategies = JSON.parse(json);
+      } catch (e) {
+        console.log(colors.red(`readStrategiesJsonAndParse -> Parsing ${yml.strategiesFilePath} json failed!`))
+        resolve([]);
+      }
       resolve(strategies)
     }
   })
 }
 
 // ! Validate json as Strategy object before saving
-export function saveStrategyJson(strategy: Strategy): Promise<any> {
-  return new Promise((resolve) => {
+export function saveStrategyJson(strategy: Strategy): Promise<boolean> {
+  return new Promise(async(resolve) => {
+    let strategies: Strategy[] = await readStrategiesJsonAndParse()
+    strategies = strategies.filter(obj => obj.name !== strategy.name);
+    strategies.push(strategy);
     const filePath = `${yml.strategiesFilePath}`
-    if (!fs.existsSync(filePath)) {
-      fs.writeFile(filePath, JSON.stringify([strategy]), (err: any) => {
-        if (err) throw err
-        console.log(colors.green(`\t Strategy ${strategy.name} saved!`))
-        resolve(true)
-      })
-    }
-    else {
-      let json = fs.readFileSync(`${yml.strategiesFilePath}`, {
-        encoding: "utf8",
-      })
-      let strategies: Strategy[] = JSON.parse(json)
-      strategies = strategies.filter(obj => obj.name !== strategy.name);
-      strategies.push(strategy);
-      fs.writeFile(filePath, JSON.stringify(strategies), (err: any) => {
-        if (err) throw err
-        console.log(colors.green(`\t Strategy ${strategy.name} saved!`))
-        resolve(true)
-      })
-    }
+    fs.writeFile(filePath, JSON.stringify(strategies), (err: any) => {
+      if (err) {
+        console.log(colors.red(`\t Strategy ${strategy.name} saved FAILED with error => ${err}`))
+        resolve(false)
+      }
+      console.log(colors.green(`\t Strategy ${strategy.name} saved!`))
+      resolve(true)
+    })
   })
 }

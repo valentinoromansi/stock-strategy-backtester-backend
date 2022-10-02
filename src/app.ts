@@ -43,9 +43,9 @@ app.post("/save-strategy", async (req: any, res: any) => {
   console.log(colors.green(req.body))
   setHeaders(res)
   let strategy: Strategy = req.body
-  await saveStrategyJson(strategy)
+  const isSaved: boolean = await saveStrategyJson(strategy)
   console.log(colors.green(`/save-strategy ended...`))
-  res.send(true, null, 2)
+  res.send(isSaved, null, 2)
 })
 
 // Save strategy in resurces/strategies.json
@@ -67,7 +67,7 @@ app.post("/backtest", async (req, res) => {
   console.log("Request: ", req.body)
   const strategy = Strategy.copy(req.body)
   console.log(strategy.description())
-  // ! Read all strategies from strategies.json
+  // ! Read all strategies from strategies.json and return list of reports insted of 1 report
   let strategyReport = new StrategyReport(strategy.name, [])
   const intervals: string[] = fs.readdirSync(yml.stocksPath).map((file: string) => file)
   for (const interval of intervals) {
