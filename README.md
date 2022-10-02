@@ -1,3 +1,9 @@
+<b>How to use:</b>
+
+1. Check if API keys in `api-key-manager.ts`
+2. Call `/update-stock-data` to fetch all stock data which will be saved in `\resources` folder
+3. Call `/backtest` with rules in `request` to run backtesting for every fetched stock and timeframe
+
 ### Installation
 
 4. Enter your API in `config.js`
@@ -39,7 +45,19 @@ graph TD
 1. Tells if attribute value is SAME/BIGGER/SMALLLER then other attribute value
 ```
 
-<b>Request body example:</b>
+<br><br>
+
+# /update-stock-data
+
+`POST`
+
+<br><br>
+
+# /save-strategy
+
+`POST`
+
+<b>Request:</b>
 
 ```json
 {
@@ -103,52 +121,182 @@ graph TD
 }
 ```
 
-<b>Request body example:</b>
+<b>Response:</b>
+
+```json
+true
+```
+
+<br><br>
+
+# /get-strategies
+
+`GET`
+
+<b>Response:</b>
+
+```json
+[
+  {
+    "name": "2 bar play",
+    "enterValueExRule": {
+      "id": 1,
+      "attribute1": "CLOSE",
+      "period": null
+    },
+    "stopLossValueExRule": {
+      "id": 0,
+      "attribute1": "OPEN",
+      "attribute2": "CLOSE",
+      "percent": 0.5,
+      "period": null
+    },
+    "riskToRewardList": [1, 2],
+    "strategyConRules": [
+      {
+        "valueExtractionRule1": {
+          "id": 0,
+          "attribute1": "CLOSE",
+          "period": null
+        },
+        "position": "ABOVE",
+        "valueExtractionRule2": {
+          "id": 1,
+          "attribute1": "CLOSE",
+          "period": null
+        }
+      },
+      {
+        "valueExtractionRule1": {
+          "id": 0,
+          "attribute1": "CLOSE",
+          "period": null
+        },
+        "position": "ABOVE",
+        "valueExtractionRule2": {
+          "id": 1,
+          "attribute1": "OPEN",
+          "period": null
+        }
+      },
+      {
+        "valueExtractionRule1": {
+          "id": 1,
+          "attribute1": "CLOSE",
+          "period": null
+        },
+        "position": "ABOVE",
+        "valueExtractionRule2": {
+          "id": 0,
+          "attribute1": "OPEN",
+          "attribute2": "CLOSE",
+          "percent": 0.5,
+          "period": null
+        }
+      }
+    ]
+  }
+]
+```
+
+<br><br>
+
+# /get-strategy-reports
+
+`GET`
+
+<b>Response:</b>
+
+```json
+[
+  {
+    "backtestResults": [
+      {
+        "entryDatesOfProfitTrades": ["2022-02-09T08:30:00.000Z", "2022-02-22T12:15:00.000Z"],
+        "entryDatesOfLossTrades": ["2022-02-22T12:45:00.000Z", "2022-02-24T08:30:00.000Z"],
+        "timesProfited": 59,
+        "timesLost": 137,
+        "timesIndecisive": 37,
+        "winRate": 0.3010204081632653,
+        "plRatio": 0.4306569343065693,
+        "plFactor": 0.3010204081632653,
+        "stockName": "AACG",
+        "interval": "15min",
+        "rewardToRisk": 1
+      },
+      {
+        "entryDatesOfProfitTrades": ["2022-02-09T08:30:00.000Z", "2022-02-22T12:15:00.000Z"],
+        "entryDatesOfLossTrades": ["2022-02-22T12:45:00.000Z", "2022-02-24T08:30:00.000Z"],
+        "timesProfited": 50,
+        "timesLost": 156,
+        "timesIndecisive": 27,
+        "winRate": 0.24271844660194175,
+        "plRatio": 0.6410256410256411,
+        "plFactor": 0.39062500000000006,
+        "stockName": "AACG",
+        "interval": "15min",
+        "rewardToRisk": 2
+      }
+    ],
+    "strategyName": "2 bar play"
+  }
+]
+```
+
+<br><br>
+
+# /update-strategy-reports
+
+`POST`
+
+<b>Request:</b>
 
 ```json
 {
-  "backtestResults": [
-    {
-      "entryDatesOfProfitTrades": ["2021-03-02T11:15:00.000Z", "2021-03-11T08:45:00.000Z", "2022-02-22T12:15:00.000Z"],
-      "entryDatesOfLossTrades": [
-        "2022-02-15T11:00:00.000Z",
-        "2022-02-18T11:30:00.000Z",
-        "2022-02-18T13:45:00.000Z",
-        "2022-02-22T11:30:00.000Z",
-        "2022-02-22T12:45:00.000Z",
-        "2022-02-24T08:30:00.000Z"
-      ],
-      "timesProfited": 59,
-      "timesLost": 137,
-      "timesIndecisive": 37,
-      "winRate": 0.3010204081632653,
-      "plRatio": 0.4306569343065693,
-      "plFactor": 0.3010204081632653,
-      "stockName": "AACG",
-      "interval": "15min",
-      "rewardToRisk": 1
-    },
-    {
-      "entryDatesOfProfitTrades": ["2022-02-22T12:15:00.000Z"],
-      "entryDatesOfLossTrades": ["2022-02-22T11:30:00.000Z", "2022-02-22T12:45:00.000Z", "2022-02-24T08:30:00.000Z"],
-      "timesProfited": 50,
-      "timesLost": 156,
-      "timesIndecisive": 27,
-      "winRate": 0.24271844660194175,
-      "plRatio": 0.6410256410256411,
-      "plFactor": 0.39062500000000006,
-      "stockName": "AACG",
-      "interval": "15min",
-      "rewardToRisk": 2
-    }
-  ],
   "strategyName": "2 bar play"
 }
 ```
 
-<br><br>
-<b>How to use:</b>
+or
 
-1. Check if API keays in `api-key-manager.ts`
-2. Call `/update-stock-data` to fetch all stock data which will be saved in `\resources` folder
-3. Call `/backtest` with rules in `request` to run backtesting for every fetched stock and timeframe
+```json
+{}
+```
+
+<b>Response:</b>
+
+```json
+[
+  {
+    "backtestResults": [
+      {
+        "entryDatesOfProfitTrades": ["2022-02-09T08:30:00.000Z", "2022-02-22T12:15:00.000Z"],
+        "entryDatesOfLossTrades": ["2022-02-22T12:45:00.000Z", "2022-02-24T08:30:00.000Z"],
+        "timesProfited": 59,
+        "timesLost": 137,
+        "timesIndecisive": 37,
+        "winRate": 0.3010204081632653,
+        "plRatio": 0.4306569343065693,
+        "plFactor": 0.3010204081632653,
+        "stockName": "AACG",
+        "interval": "15min",
+        "rewardToRisk": 1
+      },
+      {
+        "entryDatesOfProfitTrades": ["2022-02-09T08:30:00.000Z", "2022-02-22T12:15:00.000Z"],
+        "entryDatesOfLossTrades": ["2022-02-22T12:45:00.000Z", "2022-02-24T08:30:00.000Z"],
+        "timesProfited": 50,
+        "timesLost": 156,
+        "timesIndecisive": 27,
+        "winRate": 0.24271844660194175,
+        "plRatio": 0.6410256410256411,
+        "plFactor": 0.39062500000000006,
+        "stockName": "AACG",
+        "interval": "15min",
+        "rewardToRisk": 2
+      }
+    ],
+    "strategyName": "2 bar play"
+  }
+]
+```
