@@ -28,7 +28,7 @@ app.use(cors())
 const apiReceiver: ApiReceiver = new ApiReceiver()
 
 // Update stock data and save it in resources/stocks
-app.get("/update-stock-data", async (req: any, res: any) => {
+app.post("/update-stock-data", async (req: any, res: any) => {
   console.log("/update-stock-data called...")
   setHeaders(res)
   const status: boolean = await apiReceiver.fetchStockData()
