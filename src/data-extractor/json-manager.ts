@@ -3,6 +3,7 @@ import { VerticalSlice } from "../stock/vertical-slice"
 import { Strategy } from "../strategy/strategy"
 import { yml } from "../yml/yml"
 import colors from "colors"
+import { StrategyReport } from "../backtest/strategy-backtest-results"
 
 const fs = require("fs")
 
@@ -32,6 +33,8 @@ export function readStocksJsonAndParse(json: string): Stock[] {
 }
 
 
+
+
 export async function readStrategiesJsonAndParse(): Promise<Strategy[]> {
   return new Promise(resolve => {
     const filePath = `${yml.strategiesFilePath}`
@@ -43,11 +46,14 @@ export async function readStrategiesJsonAndParse(): Promise<Strategy[]> {
       let json = fs.readFileSync(`${yml.strategiesFilePath}`, {
         encoding: "utf8",
       })
-      let strategies: Strategy[]
+      let strategies: Strategy[] = []
       try {
-        strategies = JSON.parse(json);
+        let strategiesJsonObj: [] = JSON.parse(json)
+        strategiesJsonObj.forEach(strategyJsonObj => {
+          strategies.push(Strategy.copy(strategyJsonObj))
+        });        
       } catch (e) {
-        console.log(colors.red(`readStrategiesJsonAndParse -> Parsing ${yml.strategiesFilePath} json failed!`))
+        console.log(colors.red(`readStrategiesJsonAndParse -> Parsing ${yml.strategiesFilePath} json failed! Exception: ${e}`))
         resolve([]);
       }
       resolve(strategies)
@@ -55,7 +61,7 @@ export async function readStrategiesJsonAndParse(): Promise<Strategy[]> {
   })
 }
 
-// ! Validate json as Strategy object before saving
+
 export function saveStrategyJson(strategy: Strategy): Promise<boolean> {
   return new Promise(async(resolve) => {
     let strategies: Strategy[] = await readStrategiesJsonAndParse()
@@ -68,6 +74,62 @@ export function saveStrategyJson(strategy: Strategy): Promise<boolean> {
         resolve(false)
       }
       console.log(colors.green(`\t Strategy ${strategy.name} saved!`))
+      resolve(true)
+    })
+  })
+}
+
+
+
+
+export async function readStrategyReportsJsonAndParse(): Promise<StrategyReport[]> {
+  return new Promise(resolve => {
+    const filePath = `${yml.strategyReportsFilePath}`
+    if (!fs.existsSync(filePath)) {
+      console.log(colors.red(`File ${yml.strategyReportsFilePath} does not exist!`))
+      resolve([])
+    }
+    else {
+      let json = fs.readFileSync(`${yml.strategyReportsFilePath}`, {
+        encoding: "utf8",
+      })
+      let reports: StrategyReport[] = []
+      try {
+        let reportsPropsOnly: [] = JSON.parse(json)
+        reportsPropsOnly.forEach(reportPropsOnly => {
+          var report: StrategyReport = Object.create(StrategyReport.prototype);
+          Object.assign(report, reportPropsOnly);
+          reports.push(report)
+        });        
+      } 
+      catch (e) {
+        console.log(colors.red(`readBacktestReportsJsonAndParse -> Parsing ${yml.strategyReportsFilePath} json failed!`))
+        resolve([]);
+      }
+      resolve(reports)
+    }
+  })
+}
+
+
+export function saveStrategyReportsJson(newReports: StrategyReport[]): Promise<boolean> {
+  return new Promise(async(resolve) => {
+    let reportsToSave: StrategyReport[] = await readStrategyReportsJsonAndParse()
+    // Remove already existing reports so new versions can ba added
+    newReports.forEach(rep => {
+      reportsToSave = reportsToSave.filter(obj => obj.strategyName !== rep.strategyName)  
+    });
+    // Add new reports
+    newReports.forEach(rep => {
+      reportsToSave.push(rep);
+    });
+    const filePath = `${yml.strategyReportsFilePath}`
+    fs.writeFile(filePath, JSON.stringify(reportsToSave), (err: any) => {
+      if (err) {
+        console.log(colors.red(`\t Strategy reports ${newReports.map(rep => rep.strategyName)} saved FAILED with error => ${err}`))
+        resolve(false)
+      }
+      console.log(colors.green(`\t Strategy reports ${newReports.map(rep => rep.strategyName)} saved!`))
       resolve(true)
     })
   })
