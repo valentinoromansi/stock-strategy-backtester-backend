@@ -9,7 +9,7 @@ import { isPatternValid } from "./pattern-validator/pattern-validator"
 import { Strategy } from "./strategy/strategy"
 import { StrategyReport } from "./backtest/strategy-backtest-results"
 import { ApiReceiver } from "./data-extractor/api-receiver"
-import { readStocksJsonAndParse } from "./data-extractor/json-manager"
+import { readStocksJsonAndParse, readStrategiesJsonAndParse, saveStrategyJson } from "./data-extractor/json-manager"
 import { yml } from "./yml/yml"
 
 function setHeaders(res: any) {
@@ -27,13 +27,34 @@ app.use(cors())
 
 const apiReceiver: ApiReceiver = new ApiReceiver()
 
-// Get price data
+// Update stock data and save it in resources/stocks
 app.get("/update-stock-data", async (req: any, res: any) => {
   console.log("/update-stock-data called...")
   setHeaders(res)
   const status: boolean = await apiReceiver.fetchStockData()
   res.send(status, null, 2)
   console.log(colors.green(`/update-stock-data ended...`))
+})
+
+// Save strategy in resurces/strategies.json
+// ? Add validations for req object
+app.post("/save-strategy", async (req: any, res: any) => {
+  console.log("/save-strategy called...")
+  console.log(colors.green(req.body))
+  setHeaders(res)
+  let strategy: Strategy = req.body
+  await saveStrategyJson(strategy)
+  console.log(colors.green(`/save-strategy ended...`))
+  res.send(true, null, 2)
+})
+
+// Save strategy in resurces/strategies.json
+app.get("/get-strategies", async (req: any, res: any) => {
+  console.log("/get-strategies called...")
+  setHeaders(res)
+  let strategies: Strategy[] = await readStrategiesJsonAndParse()
+  console.log(colors.green(`/get-strategies ended...`))
+  res.send(JSON.stringify(strategies) )
 })
 
 // Do backtest
@@ -46,6 +67,7 @@ app.post("/backtest", async (req, res) => {
   console.log("Request: ", req.body)
   const strategy = Strategy.copy(req.body)
   console.log(strategy.description())
+  // ! Read all strategies from strategies.json
   let strategyReport = new StrategyReport(strategy.name, [])
   const intervals: string[] = fs.readdirSync(yml.stocksPath).map((file: string) => file)
   for (const interval of intervals) {
