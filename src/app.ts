@@ -20,12 +20,36 @@ function setHeaders(res: any) {
   res.setHeader("Content-Type", "application/json")
 }
 
+import {stringify} from 'flatted';
+
 export const app = express()
 app.use(express.json())
 // Cors is used for this reason: https://dev.to/p0oker/why-is-my-browser-sending-an-options-http-request-instead-of-post-5621
 app.use(cors())
 
 const apiReceiver: ApiReceiver = new ApiReceiver()
+
+// Get stock
+app.post("/get-stock", async (req: any, res: any) => {
+  console.log("/get-stock called...")
+  setHeaders(res)
+  const { interval, symbol } = req.body
+  let stock: Stock
+  const fileNames: string[] = fs.readdirSync(`${yml.stocksPath}/${interval}`).map((file: string) => file)
+  for (const fileName of fileNames) {
+    if(stock)
+      break
+    const json = fs.readFileSync(`${yml.stocksPath}/${interval}/${fileName}`, {encoding: "utf8"})
+    const stocks: Stock[] = readStocksJsonAndParse(json)
+    for(const s of stocks)
+      if(s.symbol === symbol) {
+        stock = s
+        break;
+      }
+  }
+  res.send(JSON.stringify(stock.slicesToObject()), null, 2)
+  console.log(colors.green(`/get-stock ended...`))
+})
 
 // Update stock data and save it in resources/stocks
 app.post("/update-stock-data", async (req: any, res: any) => {

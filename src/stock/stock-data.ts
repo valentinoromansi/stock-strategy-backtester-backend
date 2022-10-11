@@ -40,6 +40,15 @@ export class Stock {
     return stock
   }
 
+  slicesToObject(): {date: Date, open: number, close: number, high: number, low: number, volume: number}[] {
+    let slices: {date: Date, open: number, close: number, high: number, low: number, volume: number}[] = []
+    this.first().executeEachIteration(Direction.RIGHT, null, (slice) => {
+      slices.push({date: slice.date, open: slice.open, close: slice.close, high: slice.high, low: slice.low, volume: slice.volume})
+      return true
+    })
+    return slices
+  }
+
   static fromJson(json: string): Stock[] {
     let stocksData: Stock[] = []
     const objList = JSON.parse(json)
