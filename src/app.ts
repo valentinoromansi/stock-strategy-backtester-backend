@@ -29,7 +29,7 @@ app.use(cors())
 
 const apiReceiver: ApiReceiver = new ApiReceiver()
 
-// Get stock
+// ! Get stock - change to GEt method or leave POST but rename + validate request -> exception thrown otherwise
 app.post("/get-stock", async (req: any, res: any) => {
   console.log("/get-stock called...")
   setHeaders(res)

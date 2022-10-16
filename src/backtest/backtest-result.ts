@@ -10,6 +10,16 @@ enum TradeResult {
   NONE,
 }
 
+interface TradeDateAndValues {
+  tradeResult: TradeResult,
+  enterDate: Date,
+  enterValue: number,
+  stopLossHitDate: Date,
+  stopLossValue: number,
+  profitHitDate: Date,
+  profitValue: number
+}
+
 /**
  * BacktestData object tests 1 stock against 1 strategy and generates backtest data
  */
@@ -22,8 +32,6 @@ export class BacktestResult {
 
   stockName: string
   interval: string
-  entryDatesOfProfitTrades: Date[] = []
-  entryDatesOfLossTrades: Date[] = []
   rewardToRisk: number
   timesProfited: number = 0
   timesLost: number = 0
@@ -31,6 +39,7 @@ export class BacktestResult {
   winRate: number = 0
   plRatio: number = 0 //  plRatio=5, for each 1$ lost, 5$ are gained
   plFactor: number = 0 // plFactor is normalized version of plRatio, 0-0.5 for loss trades, 0.5-1 for profit trades. 0 -> -infinity, 1 --> +infinity
+  tradeDateAndValues: TradeDateAndValues[] = []
 
   /**
    * Loop through all slices starting from first
@@ -54,10 +63,8 @@ export class BacktestResult {
       let result: TradeResult = this.getTradeResult(takeProfitVal, stopLossVal, slice.high, slice.low)
       if (result === TradeResult.PROFIT) {
         this.timesProfited += 1
-        this.entryDatesOfProfitTrades.push(slice0.date)
       } else if (result === TradeResult.LOSS) {
         this.timesLost += 1
-        this.entryDatesOfLossTrades.push(slice0.date)
       } else if (result === TradeResult.INDECISIVE) this.timesIndecisive += 1
       // If result value is profit, loss or indecisive then calculate win rate and stop further backtesting
       if (result !== TradeResult.NONE) {
@@ -65,6 +72,14 @@ export class BacktestResult {
         this.winRate = profitsAndLoses != 0 ? this.timesProfited / profitsAndLoses : 0
         this.updatePlRatio()
         this.getPlFactor()
+        this.tradeDateAndValues.push({
+          tradeResult: result,
+          enterDate: enterSlice.date,
+          enterValue: enterVal,
+          stopLossHitDate: result === TradeResult.LOSS ? slice.date : null,
+          stopLossValue: stopLossVal,
+          profitHitDate: result === TradeResult.PROFIT ? slice.date : null,
+          profitValue: takeProfitVal})
         return false
       }
       // If there is no next slice return failed backtest

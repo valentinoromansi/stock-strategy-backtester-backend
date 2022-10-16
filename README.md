@@ -212,8 +212,6 @@ true
   {
     "backtestResults": [
       {
-        "entryDatesOfProfitTrades": ["2022-02-09T08:30:00.000Z", "2022-02-22T12:15:00.000Z"],
-        "entryDatesOfLossTrades": ["2022-02-22T12:45:00.000Z", "2022-02-24T08:30:00.000Z"],
         "timesProfited": 59,
         "timesLost": 137,
         "timesIndecisive": 37,
@@ -222,11 +220,29 @@ true
         "plFactor": 0.3010204081632653,
         "stockName": "AACG",
         "interval": "15min",
-        "rewardToRisk": 1
+        "rewardToRisk": 1,
+        "tradeDateAndValues": [
+          {
+            "tradeResult": 1,
+            "enterDate": "2021-02-26T11:15:00.000Z",
+            "enterValue": 5.375,
+            "stopLossHitDate": "2021-02-26T11:30:00.000Z",
+            "stopLossValue": 5.300000000000001,
+            "profitHitDate": null,
+            "profitValue": 5.449999999999999
+          },
+          {
+            "tradeResult": 1,
+            "enterDate": "2021-02-26T14:15:00.000Z",
+            "enterValue": 5.2614,
+            "stopLossHitDate": "2021-02-26T14:30:00.000Z",
+            "stopLossValue": 5.2318999999999996,
+            "profitHitDate": null,
+            "profitValue": 5.290900000000001
+          }
+        ]
       },
       {
-        "entryDatesOfProfitTrades": ["2022-02-09T08:30:00.000Z", "2022-02-22T12:15:00.000Z"],
-        "entryDatesOfLossTrades": ["2022-02-22T12:45:00.000Z", "2022-02-24T08:30:00.000Z"],
         "timesProfited": 50,
         "timesLost": 156,
         "timesIndecisive": 27,
@@ -235,7 +251,27 @@ true
         "plFactor": 0.39062500000000006,
         "stockName": "AACG",
         "interval": "15min",
-        "rewardToRisk": 2
+        "rewardToRisk": 2,
+        "tradeDateAndValues": [
+          {
+            "tradeResult": 1,
+            "enterDate": "2021-02-26T11:15:00.000Z",
+            "enterValue": 5.375,
+            "stopLossHitDate": "2021-02-26T11:30:00.000Z",
+            "stopLossValue": 5.300000000000001,
+            "profitHitDate": null,
+            "profitValue": 5.449999999999999
+          },
+          {
+            "tradeResult": 1,
+            "enterDate": "2021-02-26T14:15:00.000Z",
+            "enterValue": 5.2614,
+            "stopLossHitDate": "2021-02-26T14:30:00.000Z",
+            "stopLossValue": 5.2318999999999996,
+            "profitHitDate": null,
+            "profitValue": 5.290900000000001
+          }
+        ]
       }
     ],
     "strategyName": "2 bar play"
@@ -270,8 +306,6 @@ or
   {
     "backtestResults": [
       {
-        "entryDatesOfProfitTrades": ["2022-02-09T08:30:00.000Z", "2022-02-22T12:15:00.000Z"],
-        "entryDatesOfLossTrades": ["2022-02-22T12:45:00.000Z", "2022-02-24T08:30:00.000Z"],
         "timesProfited": 59,
         "timesLost": 137,
         "timesIndecisive": 37,
@@ -280,11 +314,29 @@ or
         "plFactor": 0.3010204081632653,
         "stockName": "AACG",
         "interval": "15min",
-        "rewardToRisk": 1
+        "rewardToRisk": 1,
+        "tradeDateAndValues": [
+          {
+            "tradeResult": 1,
+            "enterDate": "2021-02-26T11:15:00.000Z",
+            "enterValue": 5.375,
+            "stopLossHitDate": "2021-02-26T11:30:00.000Z",
+            "stopLossValue": 5.300000000000001,
+            "profitHitDate": null,
+            "profitValue": 5.449999999999999
+          },
+          {
+            "tradeResult": 1,
+            "enterDate": "2021-02-26T14:15:00.000Z",
+            "enterValue": 5.2614,
+            "stopLossHitDate": "2021-02-26T14:30:00.000Z",
+            "stopLossValue": 5.2318999999999996,
+            "profitHitDate": null,
+            "profitValue": 5.290900000000001
+          }
+        ]
       },
       {
-        "entryDatesOfProfitTrades": ["2022-02-09T08:30:00.000Z", "2022-02-22T12:15:00.000Z"],
-        "entryDatesOfLossTrades": ["2022-02-22T12:45:00.000Z", "2022-02-24T08:30:00.000Z"],
         "timesProfited": 50,
         "timesLost": 156,
         "timesIndecisive": 27,
@@ -293,7 +345,27 @@ or
         "plFactor": 0.39062500000000006,
         "stockName": "AACG",
         "interval": "15min",
-        "rewardToRisk": 2
+        "rewardToRisk": 2,
+        "tradeDateAndValues": [
+          {
+            "tradeResult": 1,
+            "enterDate": "2021-02-26T11:15:00.000Z",
+            "enterValue": 5.375,
+            "stopLossHitDate": "2021-02-26T11:30:00.000Z",
+            "stopLossValue": 5.300000000000001,
+            "profitHitDate": null,
+            "profitValue": 5.449999999999999
+          },
+          {
+            "tradeResult": 1,
+            "enterDate": "2021-02-26T14:15:00.000Z",
+            "enterValue": 5.2614,
+            "stopLossHitDate": "2021-02-26T14:30:00.000Z",
+            "stopLossValue": 5.2318999999999996,
+            "profitHitDate": null,
+            "profitValue": 5.290900000000001
+          }
+        ]
       }
     ],
     "strategyName": "2 bar play"
