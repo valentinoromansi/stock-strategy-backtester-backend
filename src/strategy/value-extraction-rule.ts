@@ -24,7 +24,7 @@ import { AttributeType } from "../types/attribute-type"
       id: 1
       type1: AttributeType.OPEN
       type2: AttributeType.CLOSE
-      percent: 0.5
+      percent: 50
       period: null
     }
   - Value = value at 50% between attributes 'open' and 'close' of slice moved from given slice by 1
@@ -54,7 +54,7 @@ export class ValueExtractionRule {
   description(): string {
     if (this.attribute1 && !this.attribute2 && !this.percent) return "slice[" + this.id + "]." + this.attribute1
     else if (this.attribute1 && this.attribute2 && this.percent)
-      return "slice[" + this.id + "].(" + this.percent * 100 + "% of " + this.attribute1 + "-" + this.attribute2 + ")"
+      return "slice[" + this.id + "].(" + this.percent + "% of " + this.attribute1 + "-" + this.attribute2 + ")"
     else return "RelativeSliceValueExtractionRule description could not be described"
   }
 }

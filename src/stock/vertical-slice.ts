@@ -113,14 +113,15 @@ export class VerticalSlice {
   /**
    * Takes 2 attributes values from 'rad' and a.) gives back value between those 2 attribute values based on percent or b.) gives only value of first attribute
    * For slice = new VerticalSlice(new Date(), 4, 14, 0, 0):
-   *    - 9 for new RelativeAttributeData({ type1: AttributeType.OPEN, type2: AttributeType.CLOSE, percent: 0.5 })
+   *    - 9 for new RelativeAttributeData({ type1: AttributeType.OPEN, type2: AttributeType.CLOSE, percent: 50 })
    *    - 4 for new RelativeAttributeData({ type1: AttributeType.OPEN })
    * @param percent - values from -0.4 to 1.2 would mean -40% to 120%
    */
   getValueRelativeToAttributes(rule: ValueExtractionRule): number {
-    if (rule.attribute1 && !rule.attribute2 && !rule.percent) {
+    const percent = rule.percent / 100
+    if (rule.attribute1 && !rule.attribute2 && !percent) {
       return this.getAttributeValue(rule.attribute1)
-    } else if (rule.attribute1 && rule.attribute2 && rule.percent) {
+    } else if (rule.attribute1 && rule.attribute2 && percent) {
       let lowerAttributeValue = Math.min(
         this.getAttributeValue(rule.attribute1),
         this.getAttributeValue(rule.attribute2)
@@ -128,7 +129,7 @@ export class VerticalSlice {
       let attributesValueDistance = Math.abs(
         this.getAttributeValue(rule.attribute1) - this.getAttributeValue(rule.attribute2)
       )
-      return lowerAttributeValue + attributesValueDistance * rule.percent
+      return lowerAttributeValue + attributesValueDistance * percent
     }
   }
 }

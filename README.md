@@ -72,7 +72,7 @@ graph TD
     "period": null,
     "attribute1": "OPEN",
     "attribute2": "CLOSE",
-    "percent": 0.5
+    "percent": 50
   },
   "strategyConRules": [
     {
@@ -113,7 +113,7 @@ graph TD
         "period": null,
         "attribute1": "OPEN",
         "attribute2": "CLOSE",
-        "percent": 0.5
+        "percent": 50
       }
     }
   ],
@@ -148,7 +148,7 @@ true
       "id": 0,
       "attribute1": "OPEN",
       "attribute2": "CLOSE",
-      "percent": 0.5,
+      "percent": 50,
       "period": null
     },
     "riskToRewardList": [1, 2],
@@ -190,7 +190,7 @@ true
           "id": 0,
           "attribute1": "OPEN",
           "attribute2": "CLOSE",
-          "percent": 0.5,
+          "percent": 50,
           "period": null
         }
       }

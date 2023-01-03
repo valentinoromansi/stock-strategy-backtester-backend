@@ -65,7 +65,7 @@ id: 0,
 period: null,
 type1: GraphEntityType.OPEN,
 type2: GraphEntityType.CLOSE,
-percent: 0.5
+percent: 50
 }),
 rules: [
 // second price closed below first close
@@ -95,7 +95,7 @@ id: 0,
 period: null,
 type1: GraphEntityType.OPEN,
 type2: GraphEntityType.CLOSE,
-percent: 0.5
+percent: 50
 }),
 })
 ],
@@ -114,7 +114,7 @@ STRATEGY AS JSON:
 "period": null,
 "type1": "OPEN",
 "type2": "CLOSE",
-"percent": 0.5
+"percent": 50
 },
 "riskToRewardList": [1, 2, 3],
 "rules": [
@@ -156,7 +156,7 @@ STRATEGY AS JSON:
 "period": null,
 "type1": "OPEN",
 "type2": "CLOSE",
-"percent": 0.5
+"percent": 50
 }
 }
 ]
@@ -165,37 +165,9 @@ STRATEGY AS JSON:
 // PROFIT
 YAHOO stock data: https://finance.yahoo.com/quote/aapl/history?ltr=1
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 "timesProfited": 63,
-      "timesLost": 146,
-      "timesIndecisive": 55,
-      "winRate": 0.3014354066985646,
-      "plRatio": 1.2945205479452055,
-      "plFactor": 0.564179104477612,
+"timesLost": 146,
+"timesIndecisive": 55,
+"winRate": 0.3014354066985646,
+"plRatio": 1.2945205479452055,
+"plFactor": 0.564179104477612,
