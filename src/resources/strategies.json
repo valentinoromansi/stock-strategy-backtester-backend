@@ -1,2 +1,62 @@
-[{"name":"2 bar play","enterValueExRule":{"id":1,"period":null,"attribute1":"CLOSE"},"stopLossValueExRule":{"id":0,"period":null,"attribute1":"OPEN","attribute2":"CLOSE","percent":50},"strategyConRules":[{"valueExtractionRule1":{"id":0,"period":null,"attribute1":"CLOSE"},"position":"ABOVE","valueExtractionRule2":{"id":1,"period":null,"attribute1":"CLOSE"}},{"valueExtractionRule1":{"id":0,"period":null,"attribute1":"CLOSE"},"position":"ABOVE","valueExtractionRule2":{"id":1,"period":null,"attribute1":"OPEN"}},{"valueExtractionRule1":{"id":1,"period":null,"attribute1":"CLOSE"},"position":"ABOVE","valueExtractionRule2":{"id":0,"period":null,"attribute1":"OPEN","attribute2":"CLOSE","percent":50}}],"riskToRewardList":[1,2]},
-{"name":"3 bar play","enterValueExRule":{"id":1,"period":null,"attribute1":"CLOSE"},"stopLossValueExRule":{"id":0,"period":null,"attribute1":"OPEN","attribute2":"CLOSE","percent":50},"strategyConRules":[{"valueExtractionRule1":{"id":0,"period":null,"attribute1":"CLOSE"},"position":"ABOVE","valueExtractionRule2":{"id":1,"period":null,"attribute1":"CLOSE"}},{"valueExtractionRule1":{"id":0,"period":null,"attribute1":"CLOSE"},"position":"ABOVE","valueExtractionRule2":{"id":1,"period":null,"attribute1":"OPEN"}},{"valueExtractionRule1":{"id":1,"period":null,"attribute1":"CLOSE"},"position":"ABOVE","valueExtractionRule2":{"id":0,"period":null,"attribute1":"OPEN","attribute2":"CLOSE","percent":50}}],"riskToRewardList":[1,2]}]
+[
+  {
+    "name": "2 bar play",
+    "enterValueExRule": { "id": 1, "period": null, "attribute1": "CLOSE" },
+    "stopLossValueExRule": { "id": 0, "period": null, "attribute1": "OPEN", "attribute2": "CLOSE", "percent": 50 },
+    "strategyConRules": [
+      {
+        "valueExtractionRule1": { "id": 0, "period": null, "attribute1": "CLOSE", "isRelative": false },
+        "position": "ABOVE",
+        "valueExtractionRule2": { "id": 1, "period": null, "attribute1": "CLOSE", "isRelative": false }
+      },
+      {
+        "valueExtractionRule1": { "id": 0, "period": null, "attribute1": "CLOSE", "isRelative": false },
+        "position": "ABOVE",
+        "valueExtractionRule2": { "id": 1, "period": null, "attribute1": "OPEN", "isRelative": false }
+      },
+      {
+        "valueExtractionRule1": { "id": 1, "period": null, "attribute1": "CLOSE", "isRelative": false },
+        "position": "ABOVE",
+        "valueExtractionRule2": {
+          "id": 0,
+          "period": null,
+          "attribute1": "OPEN",
+          "attribute2": "CLOSE",
+          "percent": 50,
+          "isRelative": true
+        }
+      }
+    ],
+    "riskToRewardList": [1, 2]
+  },
+  {
+    "name": "3 bar play",
+    "enterValueExRule": { "id": 1, "period": null, "attribute1": "CLOSE" },
+    "stopLossValueExRule": { "id": 0, "period": null, "attribute1": "OPEN", "attribute2": "CLOSE", "percent": 50 },
+    "strategyConRules": [
+      {
+        "valueExtractionRule1": { "id": 0, "period": null, "attribute1": "CLOSE", "isRelative": false },
+        "position": "ABOVE",
+        "valueExtractionRule2": { "id": 1, "period": null, "attribute1": "CLOSE", "isRelative": false }
+      },
+      {
+        "valueExtractionRule1": { "id": 0, "period": null, "attribute1": "CLOSE", "isRelative": false },
+        "position": "ABOVE",
+        "valueExtractionRule2": { "id": 1, "period": null, "attribute1": "OPEN", "isRelative": false }
+      },
+      {
+        "valueExtractionRule1": { "id": 1, "period": null, "attribute1": "CLOSE", "isRelative": false },
+        "position": "ABOVE",
+        "valueExtractionRule2": {
+          "id": 0,
+          "period": null,
+          "attribute1": "OPEN",
+          "attribute2": "CLOSE",
+          "percent": 50,
+          "isRelative": true
+        }
+      }
+    ],
+    "riskToRewardList": [1, 2]
+  }
+]

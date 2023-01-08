@@ -17,6 +17,7 @@ import { AttributeType } from "../types/attribute-type"
       type2: null
       percent: null
       period: null
+      isRelative: false
     }
   - Value = value of attribute='open' of slice moved from given slice by 1
 * Example 2:
@@ -26,6 +27,7 @@ import { AttributeType } from "../types/attribute-type"
       type2: AttributeType.CLOSE
       percent: 50
       period: null
+      isRelative: true
     }
   - Value = value at 50% between attributes 'open' and 'close' of slice moved from given slice by 1
  * 
@@ -36,6 +38,7 @@ export class ValueExtractionRule {
   attribute2: AttributeType
   percent: number
   period: number // used only for indicators(EMA9 -> period = 9)
+  isRelative: boolean //
 
   constructor(init?: Partial<ValueExtractionRule>) {
     Object.assign(this, init)
@@ -48,12 +51,13 @@ export class ValueExtractionRule {
       attribute2: rule.attribute2,
       percent: rule.percent,
       period: rule.period,
+      isRelative: rule.isRelative,
     })
   }
 
   description(): string {
-    if (this.attribute1 && !this.attribute2 && !this.percent) return "slice[" + this.id + "]." + this.attribute1
-    else if (this.attribute1 && this.attribute2 && this.percent)
+    if (!this.isRelative) return "slice[" + this.id + "]." + this.attribute1
+    else if (this.isRelative)
       return "slice[" + this.id + "].(" + this.percent + "% of " + this.attribute1 + "-" + this.attribute2 + ")"
     else return "RelativeSliceValueExtractionRule description could not be described"
   }

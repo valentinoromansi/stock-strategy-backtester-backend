@@ -119,17 +119,11 @@ export class VerticalSlice {
    */
   getValueRelativeToAttributes(rule: ValueExtractionRule): number {
     const percent = rule.percent / 100
-    if (rule.attribute1 && !rule.attribute2 && !percent) {
-      return this.getAttributeValue(rule.attribute1)
-    } else if (rule.attribute1 && rule.attribute2 && percent) {
-      let lowerAttributeValue = Math.min(
-        this.getAttributeValue(rule.attribute1),
-        this.getAttributeValue(rule.attribute2)
-      )
-      let attributesValueDistance = Math.abs(
-        this.getAttributeValue(rule.attribute1) - this.getAttributeValue(rule.attribute2)
-      )
-      return lowerAttributeValue + attributesValueDistance * percent
-    }
+    if (!rule.isRelative) return this.getAttributeValue(rule.attribute1)
+    let lowerAttributeValue = Math.min(this.getAttributeValue(rule.attribute1), this.getAttributeValue(rule.attribute2))
+    let attributesValueDistance = Math.abs(
+      this.getAttributeValue(rule.attribute1) - this.getAttributeValue(rule.attribute2)
+    )
+    return lowerAttributeValue + attributesValueDistance * percent
   }
 }
