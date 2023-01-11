@@ -75,7 +75,7 @@ app.post("/save-strategy", async (req: any, res: any) => {
   let strategy: Strategy = req.body
   const isSaved: boolean = await saveStrategyJson(strategy)
   console.log(colors.green(`/save-strategy ended...`))
-  res.send(isSaved, null, 2)
+  res.send('isSaved', null, 2)
 })
 
 // Reads strategies from resurces/strategies.json, removes strategy with name from request, saves new list in resurces/strategies.json
@@ -89,7 +89,7 @@ app.post("/delete-strategy", async (req: any, res: any) => {
   res.send(isDeleted, null, 2)
 })
 
-// Save strategy in resurces/strategies.json
+// Fetch strategy from resurces/strategies.json
 app.get("/get-strategies", async (req: any, res: any) => {
   console.log("/get-strategies called...")
   setHeaders(res)
