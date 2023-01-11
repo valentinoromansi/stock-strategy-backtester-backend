@@ -9,7 +9,14 @@ import { isPatternValid } from "./pattern-validator/pattern-validator"
 import { Strategy } from "./strategy/strategy"
 import { StrategyReport } from "./backtest/strategy-backtest-results"
 import { ApiReceiver } from "./data-extractor/api-receiver"
-import { readStocksJsonAndParse, readStrategiesJsonAndParse, readStrategyReportsJsonAndParse, saveStrategyJson, saveStrategyReportsJson } from "./data-extractor/json-manager"
+import {
+  deleteStrategy,
+  readStocksJsonAndParse,
+  readStrategiesJsonAndParse,
+  readStrategyReportsJsonAndParse,
+  saveStrategyJson,
+  saveStrategyReportsJson,
+} from "./data-extractor/json-manager"
 import { yml } from "./yml/yml"
 
 function setHeaders(res: any) {
@@ -20,7 +27,7 @@ function setHeaders(res: any) {
   res.setHeader("Content-Type", "application/json")
 }
 
-import {stringify} from 'flatted';
+import { stringify } from "flatted"
 
 export const app = express()
 app.use(express.json())
@@ -37,14 +44,13 @@ app.post("/get-stock", async (req: any, res: any) => {
   let stock: Stock
   const fileNames: string[] = fs.readdirSync(`${yml.stocksPath}/${interval}`).map((file: string) => file)
   for (const fileName of fileNames) {
-    if(stock)
-      break
-    const json = fs.readFileSync(`${yml.stocksPath}/${interval}/${fileName}`, {encoding: "utf8"})
+    if (stock) break
+    const json = fs.readFileSync(`${yml.stocksPath}/${interval}/${fileName}`, { encoding: "utf8" })
     const stocks: Stock[] = readStocksJsonAndParse(json)
-    for(const s of stocks)
-      if(s.symbol === symbol) {
+    for (const s of stocks)
+      if (s.symbol === symbol) {
         stock = s
-        break;
+        break
       }
   }
   res.send(JSON.stringify(stock.slicesToObject()), null, 2)
@@ -72,13 +78,24 @@ app.post("/save-strategy", async (req: any, res: any) => {
   res.send(isSaved, null, 2)
 })
 
+// Reads strategies from resurces/strategies.json, removes strategy with name from request, saves new list in resurces/strategies.json
+// ? Add validations for req object
+app.post("/delete-strategy", async (req: any, res: any) => {
+  console.log("/delete-strategy called...")
+  console.log(colors.green(req.body))
+  setHeaders(res)
+  const isDeleted: boolean = await deleteStrategy(req.body.name)
+  console.log(colors.green(`/delete-strategy ended...`))
+  res.send(isDeleted, null, 2)
+})
+
 // Save strategy in resurces/strategies.json
 app.get("/get-strategies", async (req: any, res: any) => {
   console.log("/get-strategies called...")
   setHeaders(res)
   let strategies: Strategy[] = await readStrategiesJsonAndParse()
   console.log(colors.green(`/get-strategies ended...`))
-  res.send(JSON.stringify(strategies) )
+  res.send(JSON.stringify(strategies))
 })
 
 // Do backtest and update strategy reports
@@ -91,13 +108,12 @@ app.post("/update-strategy-reports", async (req, res) => {
   setHeaders(res)
   console.log("Request: ", req.body)
   let strategies: Strategy[] = await readStrategiesJsonAndParse()
-  if(req?.body?.strategyName !== undefined)
-  strategies = strategies.filter(obj => obj.name === req.body.strategyName)
-  
+  if (req?.body?.strategyName !== undefined) strategies = strategies.filter((obj) => obj.name === req.body.strategyName)
+
   console.log(strategies)
-  
+
   let strategyReports: StrategyReport[] = []
-  strategies.forEach(strategy => {
+  strategies.forEach((strategy) => {
     console.log(strategy.description())
     // ! Read all strategies from strategies.json and return list of reports insted of 1 report
     let strategyReport = new StrategyReport(strategy.name, [])
@@ -109,7 +125,7 @@ app.post("/update-strategy-reports", async (req, res) => {
         const json = fs.readFileSync(`${yml.stocksPath}/${interval}/${fileName}`, {
           encoding: "utf8",
         })
-        stocks = readStocksJsonAndParse(json)  
+        stocks = readStocksJsonAndParse(json)
         // For stock read from current json file
         for (const stock of stocks) {
           // If stock data is not valid skip it
@@ -123,13 +139,13 @@ app.post("/update-strategy-reports", async (req, res) => {
               if (isPatternValid(slice, strategy.strategyConRules)) backtestResult.doBacktest(slice, strategy)
               return true
             })
-            strategyReport.backtestResults.push(backtestResult)            
+            strategyReport.backtestResults.push(backtestResult)
           }
         }
       }
     }
     strategyReports.push(strategyReport)
-  });
+  })
   // Save updated strategy reports as JSON
   await saveStrategyReportsJson(strategyReports)
 
