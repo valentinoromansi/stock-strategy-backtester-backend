@@ -1,1 +1,398 @@
-[{"name":"2 bar play","enterValueExRule":{"id":1,"attribute1":"CLOSE","period":null},"stopLossValueExRule":{"id":0,"attribute1":"OPEN","attribute2":"CLOSE","percent":50,"period":null},"riskToRewardList":[1,2],"strategyConRules":[{"valueExtractionRule1":{"id":0,"attribute1":"CLOSE","period":null,"isRelative":false},"position":"ABOVE","valueExtractionRule2":{"id":1,"attribute1":"CLOSE","period":null,"isRelative":false}},{"valueExtractionRule1":{"id":0,"attribute1":"CLOSE","period":null,"isRelative":false},"position":"ABOVE","valueExtractionRule2":{"id":1,"attribute1":"OPEN","period":null,"isRelative":false}},{"valueExtractionRule1":{"id":1,"attribute1":"CLOSE","period":null,"isRelative":false},"position":"ABOVE","valueExtractionRule2":{"id":0,"attribute1":"OPEN","attribute2":"CLOSE","percent":50,"period":null,"isRelative":true}}]},{"name":"3 bar play","enterValueExRule":{"id":1,"attribute1":"CLOSE","period":null},"stopLossValueExRule":{"id":0,"attribute1":"OPEN","attribute2":"CLOSE","percent":50,"period":null},"riskToRewardList":[1,2],"strategyConRules":[{"valueExtractionRule1":{"id":0,"attribute1":"CLOSE","period":null,"isRelative":false},"position":"ABOVE","valueExtractionRule2":{"id":1,"attribute1":"CLOSE","period":null,"isRelative":false}},{"valueExtractionRule1":{"id":0,"attribute1":"CLOSE","period":null,"isRelative":false},"position":"ABOVE","valueExtractionRule2":{"id":1,"attribute1":"OPEN","period":null,"isRelative":false}},{"valueExtractionRule1":{"id":1,"attribute1":"CLOSE","period":null,"isRelative":false},"position":"ABOVE","valueExtractionRule2":{"id":0,"attribute1":"OPEN","attribute2":"CLOSE","percent":50,"period":null,"isRelative":true}}]},{"name":"1 bar play","enterValueExRule":{"id":1,"attribute1":"CLOSE","period":null,"isRelative":false},"stopLossValueExRule":{"id":0,"attribute1":"OPEN","attribute2":"CLOSE","percent":0.5,"period":null,"isRelative":true},"riskToRewardList":[1,2],"strategyConRules":[{"valueExtractionRule1":{"id":0,"attribute1":"CLOSE","period":null},"position":"ABOVE","valueExtractionRule2":{"id":1,"attribute1":"CLOSE","period":null}},{"valueExtractionRule1":{"id":0,"attribute1":"CLOSE","period":null},"position":"ABOVE","valueExtractionRule2":{"id":1,"attribute1":"OPEN","period":null}},{"valueExtractionRule1":{"id":1,"attribute1":"CLOSE","period":null},"position":"ABOVE","valueExtractionRule2":{"id":0,"attribute1":"OPEN","attribute2":"CLOSE","percent":0.5,"period":null}}]},{"name":"77 bar play","enterValueExRule":{"id":1,"attribute1":"CLOSE","period":null,"isRelative":false},"stopLossValueExRule":{"id":0,"attribute1":"OPEN","attribute2":"CLOSE","percent":44,"period":null,"isRelative":true},"riskToRewardList":[1,2],"strategyConRules":[{"valueExtractionRule1":{"id":0,"attribute1":"CLOSE","period":null},"position":"ABOVE","valueExtractionRule2":{"id":1,"attribute1":"CLOSE","period":null}},{"valueExtractionRule1":{"id":0,"attribute1":"CLOSE","period":null},"position":"ABOVE","valueExtractionRule2":{"id":1,"attribute1":"OPEN","period":null}},{"valueExtractionRule1":{"id":1,"attribute1":"CLOSE","period":null},"position":"ABOVE","valueExtractionRule2":{"id":0,"attribute1":"OPEN","attribute2":"CLOSE","percent":0.5,"period":null}}]},{"name":"yolo bar play","enterValueExRule":{"id":1,"attribute1":"CLOSE","attribute2":"OPEN","percent":11,"period":null,"isRelative":true},"stopLossValueExRule":{"id":0,"attribute1":"OPEN","attribute2":"CLOSE","percent":69,"period":null,"isRelative":true},"riskToRewardList":[1,2],"strategyConRules":[{"valueExtractionRule1":{"id":0,"attribute1":"RSI","period":null},"position":"EQUAL","valueExtractionRule2":{"id":1,"attribute1":"RSI","period":null}},{"valueExtractionRule1":{"id":0,"attribute1":"CLOSE","period":null},"position":"ABOVE","valueExtractionRule2":{"id":1,"attribute1":"OPEN","period":null}},{"valueExtractionRule1":{"id":1,"attribute1":"CLOSE","period":null},"position":"ABOVE","valueExtractionRule2":{"id":0,"attribute1":"OPEN","attribute2":"CLOSE","percent":0.5,"period":null}}]},{"name":"new one ma boyyyy","enterValueExRule":{"id":1,"attribute1":"CLOSE","period":null,"isRelative":true,"attribute2":"OPEN","percent":11},"stopLossValueExRule":{"id":0,"attribute1":"OPEN","attribute2":"CLOSE","percent":69,"period":null,"isRelative":true},"riskToRewardList":[1,2],"strategyConRules":[{"valueExtractionRule1":{"id":0,"attribute1":"RSI","period":null},"position":"EQUAL","valueExtractionRule2":{"id":1,"attribute1":"RSI","period":null}},{"valueExtractionRule1":{"id":0,"attribute1":"CLOSE","period":null},"position":"ABOVE","valueExtractionRule2":{"id":1,"attribute1":"OPEN","period":null}},{"valueExtractionRule1":{"id":1,"attribute1":"CLOSE","period":null},"position":"ABOVE","valueExtractionRule2":{"id":0,"attribute1":"OPEN","attribute2":"CLOSE","percent":0.5,"period":null}}]}]
+[
+    {
+        "name": "2 bar play",
+        "enterValueExRule": {
+            "id": 1,
+            "attribute1": "CLOSE",
+            "period": null
+        },
+        "stopLossValueExRule": {
+            "id": 0,
+            "attribute1": "OPEN",
+            "attribute2": "CLOSE",
+            "percent": 50,
+            "period": null
+        },
+        "riskToRewardList": [
+            1,
+            2
+        ],
+        "strategyConRules": [
+            {
+                "valueExtractionRule1": {
+                    "id": 0,
+                    "attribute1": "CLOSE",
+                    "period": null,
+                    "isRelative": false
+                },
+                "position": "ABOVE",
+                "valueExtractionRule2": {
+                    "id": 1,
+                    "attribute1": "CLOSE",
+                    "period": null,
+                    "isRelative": false
+                }
+            },
+            {
+                "valueExtractionRule1": {
+                    "id": 0,
+                    "attribute1": "CLOSE",
+                    "period": null,
+                    "isRelative": false
+                },
+                "position": "ABOVE",
+                "valueExtractionRule2": {
+                    "id": 1,
+                    "attribute1": "OPEN",
+                    "period": null,
+                    "isRelative": false
+                }
+            },
+            {
+                "valueExtractionRule1": {
+                    "id": 1,
+                    "attribute1": "CLOSE",
+                    "period": null,
+                    "isRelative": false
+                },
+                "position": "ABOVE",
+                "valueExtractionRule2": {
+                    "id": 0,
+                    "attribute1": "OPEN",
+                    "attribute2": "CLOSE",
+                    "percent": 50,
+                    "period": null,
+                    "isRelative": true
+                }
+            }
+        ]
+    },
+    {
+        "name": "3 bar play",
+        "enterValueExRule": {
+            "id": 1,
+            "attribute1": "CLOSE",
+            "period": null
+        },
+        "stopLossValueExRule": {
+            "id": 0,
+            "attribute1": "OPEN",
+            "attribute2": "CLOSE",
+            "percent": 50,
+            "period": null
+        },
+        "riskToRewardList": [
+            1,
+            2
+        ],
+        "strategyConRules": [
+            {
+                "valueExtractionRule1": {
+                    "id": 0,
+                    "attribute1": "CLOSE",
+                    "period": null,
+                    "isRelative": false
+                },
+                "position": "ABOVE",
+                "valueExtractionRule2": {
+                    "id": 1,
+                    "attribute1": "CLOSE",
+                    "period": null,
+                    "isRelative": false
+                }
+            },
+            {
+                "valueExtractionRule1": {
+                    "id": 0,
+                    "attribute1": "CLOSE",
+                    "period": null,
+                    "isRelative": false
+                },
+                "position": "ABOVE",
+                "valueExtractionRule2": {
+                    "id": 1,
+                    "attribute1": "OPEN",
+                    "period": null,
+                    "isRelative": false
+                }
+            },
+            {
+                "valueExtractionRule1": {
+                    "id": 1,
+                    "attribute1": "CLOSE",
+                    "period": null,
+                    "isRelative": false
+                },
+                "position": "ABOVE",
+                "valueExtractionRule2": {
+                    "id": 0,
+                    "attribute1": "OPEN",
+                    "attribute2": "CLOSE",
+                    "percent": 50,
+                    "period": null,
+                    "isRelative": true
+                }
+            }
+        ]
+    },
+    {
+        "name": "1 bar play",
+        "enterValueExRule": {
+            "id": 1,
+            "attribute1": "CLOSE",
+            "period": null,
+            "isRelative": false
+        },
+        "stopLossValueExRule": {
+            "id": 0,
+            "attribute1": "OPEN",
+            "attribute2": "CLOSE",
+            "percent": 0.5,
+            "period": null,
+            "isRelative": true
+        },
+        "riskToRewardList": [
+            1,
+            2
+        ],
+        "strategyConRules": [
+            {
+                "valueExtractionRule1": {
+                    "id": 0,
+                    "attribute1": "CLOSE",
+                    "period": null
+                },
+                "position": "ABOVE",
+                "valueExtractionRule2": {
+                    "id": 1,
+                    "attribute1": "CLOSE",
+                    "period": null
+                }
+            },
+            {
+                "valueExtractionRule1": {
+                    "id": 0,
+                    "attribute1": "CLOSE",
+                    "period": null
+                },
+                "position": "ABOVE",
+                "valueExtractionRule2": {
+                    "id": 1,
+                    "attribute1": "OPEN",
+                    "period": null
+                }
+            },
+            {
+                "valueExtractionRule1": {
+                    "id": 1,
+                    "attribute1": "CLOSE",
+                    "period": null
+                },
+                "position": "ABOVE",
+                "valueExtractionRule2": {
+                    "id": 0,
+                    "attribute1": "OPEN",
+                    "attribute2": "CLOSE",
+                    "percent": 0.5,
+                    "period": null
+                }
+            }
+        ]
+    },
+    {
+        "name": "77 bar play",
+        "enterValueExRule": {
+            "id": 1,
+            "attribute1": "CLOSE",
+            "period": null,
+            "isRelative": false
+        },
+        "stopLossValueExRule": {
+            "id": 0,
+            "attribute1": "OPEN",
+            "attribute2": "CLOSE",
+            "percent": 44,
+            "period": null,
+            "isRelative": true
+        },
+        "riskToRewardList": [
+            1,
+            2
+        ],
+        "strategyConRules": [
+            {
+                "valueExtractionRule1": {
+                    "id": 0,
+                    "attribute1": "CLOSE",
+                    "period": null
+                },
+                "position": "ABOVE",
+                "valueExtractionRule2": {
+                    "id": 1,
+                    "attribute1": "CLOSE",
+                    "period": null
+                }
+            },
+            {
+                "valueExtractionRule1": {
+                    "id": 0,
+                    "attribute1": "CLOSE",
+                    "period": null
+                },
+                "position": "ABOVE",
+                "valueExtractionRule2": {
+                    "id": 1,
+                    "attribute1": "OPEN",
+                    "period": null
+                }
+            },
+            {
+                "valueExtractionRule1": {
+                    "id": 1,
+                    "attribute1": "CLOSE",
+                    "period": null
+                },
+                "position": "ABOVE",
+                "valueExtractionRule2": {
+                    "id": 0,
+                    "attribute1": "OPEN",
+                    "attribute2": "CLOSE",
+                    "percent": 0.5,
+                    "period": null
+                }
+            }
+        ]
+    },
+    {
+        "name": "yolo bar play",
+        "enterValueExRule": {
+            "id": 1,
+            "attribute1": "CLOSE",
+            "attribute2": "OPEN",
+            "percent": 11,
+            "period": null,
+            "isRelative": true
+        },
+        "stopLossValueExRule": {
+            "id": 0,
+            "attribute1": "OPEN",
+            "attribute2": "CLOSE",
+            "percent": 69,
+            "period": null,
+            "isRelative": true
+        },
+        "riskToRewardList": [
+            1,
+            2
+        ],
+        "strategyConRules": [
+            {
+                "valueExtractionRule1": {
+                    "id": 0,
+                    "attribute1": "RSI",
+                    "period": null
+                },
+                "position": "EQUAL",
+                "valueExtractionRule2": {
+                    "id": 1,
+                    "attribute1": "RSI",
+                    "period": null
+                }
+            },
+            {
+                "valueExtractionRule1": {
+                    "id": 0,
+                    "attribute1": "CLOSE",
+                    "period": null
+                },
+                "position": "ABOVE",
+                "valueExtractionRule2": {
+                    "id": 1,
+                    "attribute1": "OPEN",
+                    "period": null
+                }
+            },
+            {
+                "valueExtractionRule1": {
+                    "id": 1,
+                    "attribute1": "CLOSE",
+                    "period": null
+                },
+                "position": "ABOVE",
+                "valueExtractionRule2": {
+                    "id": 0,
+                    "attribute1": "OPEN",
+                    "attribute2": "CLOSE",
+                    "percent": 0.5,
+                    "period": null
+                }
+            }
+        ]
+    },
+    {
+        "name": "new one ma boyyyy",
+        "enterValueExRule": {
+            "id": 1,
+            "attribute1": "CLOSE",
+            "period": null,
+            "isRelative": true,
+            "attribute2": "OPEN",
+            "percent": 11
+        },
+        "stopLossValueExRule": {
+            "id": 0,
+            "attribute1": "OPEN",
+            "attribute2": "CLOSE",
+            "percent": 69,
+            "period": null,
+            "isRelative": true
+        },
+        "riskToRewardList": [
+            1,
+            2
+        ],
+        "strategyConRules": [
+            {
+                "valueExtractionRule1": {
+                    "id": 0,
+                    "attribute1": "RSI",
+                    "period": null
+                },
+                "position": "EQUAL",
+                "valueExtractionRule2": {
+                    "id": 1,
+                    "attribute1": "RSI",
+                    "period": null
+                }
+            },
+            {
+                "valueExtractionRule1": {
+                    "id": 0,
+                    "attribute1": "CLOSE",
+                    "period": null
+                },
+                "position": "ABOVE",
+                "valueExtractionRule2": {
+                    "id": 1,
+                    "attribute1": "OPEN",
+                    "period": null
+                }
+            },
+            {
+                "valueExtractionRule1": {
+                    "id": 1,
+                    "attribute1": "CLOSE",
+                    "period": null
+                },
+                "position": "ABOVE",
+                "valueExtractionRule2": {
+                    "id": 0,
+                    "attribute1": "OPEN",
+                    "attribute2": "CLOSE",
+                    "percent": 0.5,
+                    "period": null
+                }
+            }
+        ]
+    }
+]
