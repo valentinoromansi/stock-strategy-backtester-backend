@@ -87,9 +87,6 @@ dist
 # JavaScript Build
 build
 
-# Extracted stock resources
-src/resources/stocks
-
 # Gatsby files
 .cache/
 # Comment in the public line in if your project uses Gatsby and not Next.js
