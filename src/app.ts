@@ -163,3 +163,13 @@ app.get("/get-strategy-reports", async (req: any, res: any) => {
   console.log(colors.green(`/get-strategy-reports ended...`))
   res.send(JSON.stringify(strategyReports))
 })
+
+
+// Authenticate user and send access key back
+app.post("/authenticate", async (req: any, res: any) => {
+  console.log("/update-stock-data called...")
+  setHeaders(res)
+  const status: boolean = await apiReceiver.fetchStockData()
+  res.send(status, null, 2)
+  console.log(colors.green(`/update-stock-data ended...`))
+})
