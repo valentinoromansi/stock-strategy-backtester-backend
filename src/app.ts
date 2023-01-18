@@ -28,6 +28,7 @@ function setHeaders(res: any) {
 }
 
 import { stringify } from "flatted"
+import { authenticate, AuthentificationCredentials } from "./authentification/authentification"
 
 export const app = express()
 app.use(express.json())
@@ -166,10 +167,17 @@ app.get("/get-strategy-reports", async (req: any, res: any) => {
 
 
 // Authenticate user and send access key back
-app.post("/authenticate", async (req: any, res: any) => {
-  console.log("/update-stock-data called...")
+app.post("/authenticate", async (req: {body: AuthentificationCredentials}, res: any) => {
+  console.log(`authenticate called... for user="${req.body.user}"`)
   setHeaders(res)
-  const status: boolean = await apiReceiver.fetchStockData()
-  res.send(status, null, 2)
-  console.log(colors.green(`/update-stock-data ended...`))
+  const authenticated = authenticate(req.body)
+  if(!authenticated) {
+    res.status(400).send({message: `Authentification failed for user ${req.body.user}!`})
+    return
+  }
+
+
+
+  res.send({message: `User ${req.body.user} authenticated.`})
+  console.log(colors.green(`/authenticate ended...`))
 })
