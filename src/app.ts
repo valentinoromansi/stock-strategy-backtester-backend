@@ -28,6 +28,7 @@ function setHeaders(res: any) {
 }
 
 import { stringify } from "flatted"
+import { authenticateAccessToken, authenticateUserCredentials, AuthentificationCredentials, generateAccessToken } from "./authentification/authentification"
 
 export const app = express()
 app.use(express.json())
@@ -37,7 +38,7 @@ app.use(cors())
 const apiReceiver: ApiReceiver = new ApiReceiver()
 
 // ! Get stock - change to GEt method or leave POST but rename + validate request -> exception thrown otherwise
-app.post("/get-stock", async (req: any, res: any) => {
+app.post("/get-stock", authenticateAccessToken, async (req: any, res: any) => {
   console.log("/get-stock called...")
   setHeaders(res)
   const { interval, symbol } = req.body
@@ -58,7 +59,7 @@ app.post("/get-stock", async (req: any, res: any) => {
 })
 
 // Update stock data and save it in resources/stocks
-app.post("/update-stock-data", async (req: any, res: any) => {
+app.post("/update-stock-data", authenticateAccessToken, async (req: any, res: any) => {
   console.log("/update-stock-data called...")
   setHeaders(res)
   const status: boolean = await apiReceiver.fetchStockData()
@@ -68,7 +69,7 @@ app.post("/update-stock-data", async (req: any, res: any) => {
 
 // Save strategy in resurces/strategies.json
 // ? Add validations for req object
-app.post("/save-strategy", async (req: any, res: any) => {
+app.post("/save-strategy", authenticateAccessToken, async (req: any, res: any) => {
   console.log("/save-strategy called...")
   console.log(colors.green(req.body))
   setHeaders(res)
@@ -80,7 +81,7 @@ app.post("/save-strategy", async (req: any, res: any) => {
 
 // Reads strategies from resurces/strategies.json, removes strategy with name from request, saves new list in resurces/strategies.json
 // ? Add validations for req object
-app.post("/delete-strategy", async (req: any, res: any) => {
+app.post("/delete-strategy", authenticateAccessToken, async (req: any, res: any) => {
   console.log("/delete-strategy called...")
   console.log(colors.green(req.body))
   setHeaders(res)
@@ -90,7 +91,7 @@ app.post("/delete-strategy", async (req: any, res: any) => {
 })
 
 // Fetch strategy from resurces/strategies.json
-app.get("/get-strategies", async (req: any, res: any) => {
+app.get("/get-strategies", authenticateAccessToken, async (req: any, res: any) => {
   console.log("/get-strategies called...")
   setHeaders(res)
   let strategies: Strategy[] = await readStrategiesJsonAndParse()
@@ -103,7 +104,7 @@ app.get("/get-strategies", async (req: any, res: any) => {
 // ? Add validations for req object before calling 'Strategy.copy(req.body)'
 // ? import { validate, Matches, IsDefined } from "class-validator";
 // ? import { plainToClass, Expose } from "class-transformer";
-app.post("/update-strategy-reports", async (req, res) => {
+app.post("/update-strategy-reports",authenticateAccessToken, async (req, res) => {
   console.log("/update-strategy-reports called...")
   setHeaders(res)
   console.log("Request: ", req.body)
@@ -156,10 +157,25 @@ app.post("/update-strategy-reports", async (req, res) => {
 })
 
 // Save strategy in resurces/strategies.json
-app.get("/get-strategy-reports", async (req: any, res: any) => {
+app.get("/get-strategy-reports", authenticateAccessToken, async (req: any, res: any) => {
   console.log("/get-strategy-reports called...")
   setHeaders(res)
   let strategyReports: StrategyReport[] = await readStrategyReportsJsonAndParse()
   console.log(colors.green(`/get-strategy-reports ended...`))
   res.send(JSON.stringify(strategyReports))
+})
+
+
+// Authenticate user and send access key back
+app.post("/authenticate", async (req: {body: AuthentificationCredentials}, res: any) => {
+  console.log(`authenticate called... for user="${req.body.user}"`)
+  setHeaders(res)
+  const authenticated = authenticateUserCredentials(req.body)
+  if(!authenticated) {
+    res.status(400).send({message: `Authentification failed for user ${req.body.user}!`})
+    return
+  }
+  const jwt = generateAccessToken(req.body)
+  res.send({message: `User ${req.body.user} authenticated.`, accessToken: jwt})
+  console.log(colors.green(`/authenticate ended...`))
 })
