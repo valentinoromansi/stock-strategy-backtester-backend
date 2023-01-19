@@ -27,9 +27,8 @@ export function authenticateAccessToken(req: any, res: any, next: any) {
 		return res.status(401).send({message: 'Access token verification failed! Access token could not be extracted from header!'})
 	const token = auth.split(' ')[1]
 	jwt.verify(token, process.env.ACCESS_TOKEN_PRIVATE_KEY, (err: any, obj: any) => {
-		if(err)
-			return res.status(403).send({message: 'Access token verification failed! Access token extracted but verification failed!'})
-		res.accessToken=token
+	if(err)
+		return res.status(403).send({message: 'Access token verification failed! Access token extracted but verification failed!'})
 		next()
 	})
 }
