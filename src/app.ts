@@ -29,6 +29,7 @@ function setHeaders(res: any) {
 
 import { stringify } from "flatted"
 import { authenticateAccessToken, authenticateUserCredentials, AuthentificationCredentials, generateAccessToken } from "./authentification/authentification"
+import { ServiceResponse } from "./types/service-response"
 
 export const app = express()
 app.use(express.json())
@@ -54,7 +55,7 @@ app.post("/get-stock", authenticateAccessToken, async (req: any, res: any) => {
         break
       }
   }
-  res.send(JSON.stringify(stock.slicesToObject()), null, 2)
+  res.send(new ServiceResponse({data: JSON.stringify(stock.slicesToObject()), status: 200}))
   console.log(colors.green(`/get-stock ended...`))
 })
 
@@ -63,7 +64,7 @@ app.post("/update-stock-data", authenticateAccessToken, async (req: any, res: an
   console.log("/update-stock-data called...")
   setHeaders(res)
   const status: boolean = await apiReceiver.fetchStockData()
-  res.send(status, null, 2)
+  res.send(new ServiceResponse({status: 200}))
   console.log(colors.green(`/update-stock-data ended...`))
 })
 
@@ -76,7 +77,7 @@ app.post("/save-strategy", authenticateAccessToken, async (req: any, res: any) =
   let strategy: Strategy = req.body
   const isSaved: boolean = await saveStrategyJson(strategy)
   console.log(colors.green(`/save-strategy ended...`))
-  res.send('isSaved', null, 2)
+  res.send(new ServiceResponse({status: 200}))
 })
 
 // Reads strategies from resurces/strategies.json, removes strategy with name from request, saves new list in resurces/strategies.json
@@ -87,7 +88,7 @@ app.post("/delete-strategy", authenticateAccessToken, async (req: any, res: any)
   setHeaders(res)
   const isDeleted: boolean = await deleteStrategy(req.body.name)
   console.log(colors.green(`/delete-strategy ended...`))
-  res.send(isDeleted, null, 2)
+  res.send(new ServiceResponse({status: 200}))
 })
 
 // Fetch strategy from resurces/strategies.json
@@ -96,7 +97,7 @@ app.get("/get-strategies", authenticateAccessToken, async (req: any, res: any) =
   setHeaders(res)
   let strategies: Strategy[] = await readStrategiesJsonAndParse()
   console.log(colors.green(`/get-strategies ended...`))
-  res.send(JSON.stringify(strategies))
+  res.send(new ServiceResponse({data: JSON.stringify(strategies), status: 200}))
 })
 
 // Do backtest and update strategy reports
@@ -152,7 +153,7 @@ app.post("/update-strategy-reports",authenticateAccessToken, async (req, res) =>
 
   // Send back all strategy reports including updated ones
   let newStrategyReports: StrategyReport[] = await readStrategyReportsJsonAndParse()
-  res.send(JSON.stringify(newStrategyReports))
+  res.send(new ServiceResponse({data: JSON.stringify(newStrategyReports), status: 200}))
   console.log(colors.green(`/update-strategy-reports ended...`))
 })
 
@@ -162,7 +163,7 @@ app.get("/get-strategy-reports", authenticateAccessToken, async (req: any, res: 
   setHeaders(res)
   let strategyReports: StrategyReport[] = await readStrategyReportsJsonAndParse()
   console.log(colors.green(`/get-strategy-reports ended...`))
-  res.send(JSON.stringify(strategyReports))
+  res.send(new ServiceResponse({data: JSON.stringify(strategyReports), status: 200}))
 })
 
 
@@ -172,10 +173,10 @@ app.post("/authenticate", async (req: {body: AuthentificationCredentials}, res: 
   setHeaders(res)
   const authenticated = authenticateUserCredentials(req.body)
   if(!authenticated) {
-    res.status(400).send({message: `Authentification failed for user ${req.body.user}!`})
+    res.send(new ServiceResponse({message: `Authentification failed for user ${req.body.user}!`, status: 400}))
     return
   }
   const jwt = generateAccessToken(req.body)
-  res.send({message: `User ${req.body.user} authenticated.`, accessToken: jwt})
+  res.send(new ServiceResponse({data: jwt, status: 200}))
   console.log(colors.green(`/authenticate ended...`))
 })

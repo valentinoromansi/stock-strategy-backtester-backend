@@ -3,6 +3,8 @@ const fs = require("fs")
 import jwt from 'jsonwebtoken'
 import 'dotenv/config'
 
+import { ServiceResponse } from '../types/service-response'
+
 
 export interface AuthentificationCredentials {
 	user: string,
@@ -24,11 +26,11 @@ export function generateAccessToken(credentials: AuthentificationCredentials) {
 export function authenticateAccessToken(req: any, res: any, next: any) {
 	const auth = req?.headers?.authorization
 	if(!auth || auth.split(' ').length < 2) 
-		return res.status(401).send({message: 'Access token verification failed! Access token could not be extracted from header!'})
+		return res.status(401).send(new ServiceResponse({message: 'Access token verification failed! Access token could not be extracted from header!', status: 401}))
 	const token = auth.split(' ')[1]
 	jwt.verify(token, process.env.ACCESS_TOKEN_PRIVATE_KEY, (err: any, obj: any) => {
 	if(err)
-		return res.status(403).send({message: 'Access token verification failed! Access token extracted but verification failed!'})
+		return res.status(403).send(new ServiceResponse({message: 'Access token verification failed! Access token extracted but verification failed!', status: 403}))
 		next()
 	})
 }
