@@ -24,6 +24,7 @@ export function generateAccessToken(credentials: AuthentificationCredentials) {
 
 // Header.authorization must be in format "Bearer token"
 export function authenticateAccessToken(req: any, res: any, next: any) {
+	console.log(req.headers)
 	const auth = req?.headers?.authorization
 	if(!auth || auth.split(' ').length < 2) 
 		return res.status(401).send(new ServiceResponse({message: 'Access token verification failed! Access token could not be extracted from header!', status: 401}))

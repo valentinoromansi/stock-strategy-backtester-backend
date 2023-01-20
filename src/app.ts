@@ -55,7 +55,7 @@ app.post("/get-stock", authenticateAccessToken, async (req: any, res: any) => {
         break
       }
   }
-  res.send(new ServiceResponse({data: JSON.stringify(stock.slicesToObject()), status: 200}))
+  res.send(new ServiceResponse({data: stock.slicesToObject(), status: 200}))
   console.log(colors.green(`/get-stock ended...`))
 })
 
@@ -97,7 +97,7 @@ app.get("/get-strategies", authenticateAccessToken, async (req: any, res: any) =
   setHeaders(res)
   let strategies: Strategy[] = await readStrategiesJsonAndParse()
   console.log(colors.green(`/get-strategies ended...`))
-  res.send(new ServiceResponse({data: JSON.stringify(strategies), status: 200}))
+  res.send(new ServiceResponse({data: strategies, status: 200}))
 })
 
 // Do backtest and update strategy reports
@@ -153,7 +153,7 @@ app.post("/update-strategy-reports",authenticateAccessToken, async (req, res) =>
 
   // Send back all strategy reports including updated ones
   let newStrategyReports: StrategyReport[] = await readStrategyReportsJsonAndParse()
-  res.send(new ServiceResponse({data: JSON.stringify(newStrategyReports), status: 200}))
+  res.send(new ServiceResponse({data: newStrategyReports, status: 200}))
   console.log(colors.green(`/update-strategy-reports ended...`))
 })
 
@@ -163,7 +163,7 @@ app.get("/get-strategy-reports", authenticateAccessToken, async (req: any, res: 
   setHeaders(res)
   let strategyReports: StrategyReport[] = await readStrategyReportsJsonAndParse()
   console.log(colors.green(`/get-strategy-reports ended...`))
-  res.send(new ServiceResponse({data: JSON.stringify(strategyReports), status: 200}))
+  res.send(new ServiceResponse({data: strategyReports, status: 200}))
 })
 
 
@@ -176,7 +176,7 @@ app.post("/authenticate", async (req: {body: AuthentificationCredentials}, res: 
     res.send(new ServiceResponse({message: `Authentification failed for user ${req.body.user}!`, status: 400}))
     return
   }
-  const jwt = generateAccessToken(req.body)
-  res.send(new ServiceResponse({data: jwt, status: 200}))
+  const token = generateAccessToken(req.body)
+  res.send(new ServiceResponse({data: token, status: 200}))
   console.log(colors.green(`/authenticate ended...`))
 })
