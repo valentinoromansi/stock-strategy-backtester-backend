@@ -97,7 +97,7 @@ app.get("/get-strategies", authenticateAccessToken, async (req: any, res: any) =
   setHeaders(res)
   let strategies: Strategy[] = await readStrategiesJsonAndParse()
   console.log(colors.green(`/get-strategies ended...`))
-  res.send(new ServiceResponse({data: JSON.stringify(strategies), status: 200}))
+  res.send(new ServiceResponse({data: strategies, status: 200}))
 })
 
 // Do backtest and update strategy reports
@@ -176,7 +176,7 @@ app.post("/authenticate", async (req: {body: AuthentificationCredentials}, res: 
     res.send(new ServiceResponse({message: `Authentification failed for user ${req.body.user}!`, status: 400}))
     return
   }
-  const jwt = generateAccessToken(req.body)
-  res.send(new ServiceResponse({data: jwt, status: 200}))
+  const token = generateAccessToken(req.body)
+  res.send(new ServiceResponse({data: token, status: 200}))
   console.log(colors.green(`/authenticate ended...`))
 })
