@@ -75,6 +75,8 @@ app.post("/save-strategy", authenticateAccessToken, async (req: any, res: any) =
   console.log(colors.green(req.body))
   setHeaders(res)
   let strategy: Strategy = req.body
+  if(!strategy.riskToRewardList || strategy.riskToRewardList?.length === 0)
+    strategy.riskToRewardList = [1, 2]
   const isSaved: boolean = await saveStrategyJson(strategy)
   console.log(colors.green(`/save-strategy ended...`))
   res.send(new ServiceResponse({status: 200}))
