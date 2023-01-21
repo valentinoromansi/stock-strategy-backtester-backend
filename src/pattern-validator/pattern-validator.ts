@@ -2,6 +2,7 @@ import { VerticalSlice } from "../stock/vertical-slice"
 import { Direction } from "../types/direction"
 import { ConditionalRule } from "../strategy/conditional-rule"
 import { Position } from "../types/position"
+import { Strategy } from "../strategy/strategy"
 
 /**
  * Takes vertical slice and checks if it satisfies all defined rules
@@ -10,10 +11,12 @@ import { Position } from "../types/position"
  * @param slice - in 'strategyRules' it will be represented as GraphEntity with id=0
  * @param rules
  */
-export function isPatternValid(slice: VerticalSlice, rules: ConditionalRule[]): boolean {
-  const furthestSliceId = rules.reduce((max, rule) => {
+export function isPatternValid(slice: VerticalSlice, strategy: Strategy): boolean {
+  const rules: ConditionalRule[] = strategy.strategyConRules
+  let furthestSliceId = rules.reduce((max, rule) => {
     return Math.max(max, rule.valueExtractionRule1.id, rule.valueExtractionRule2.id)
   }, 0)
+  furthestSliceId = Math.max(furthestSliceId, strategy.enterValueExRule.id, strategy.stopLossValueExRule.id)
 
   if (!slice.hasConnectedSlices(Direction.RIGHT, furthestSliceId)) return false
 

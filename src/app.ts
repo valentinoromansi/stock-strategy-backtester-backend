@@ -112,10 +112,8 @@ app.post("/update-strategy-reports",authenticateAccessToken, async (req, res) =>
   setHeaders(res)
   console.log("Request: ", req.body)
   let strategies: Strategy[] = await readStrategiesJsonAndParse()
-  if (req?.body?.strategyName !== undefined) strategies = strategies.filter((obj) => obj.name === req.body.strategyName)
-
-  console.log(strategies)
-
+  if (req?.body?.strategyName !== undefined) 
+    strategies = strategies.filter((obj) => obj.name === req.body.strategyName)
   let strategyReports: StrategyReport[] = []
   strategies.forEach((strategy) => {
     console.log(strategy.description())
@@ -140,7 +138,8 @@ app.post("/update-strategy-reports",authenticateAccessToken, async (req, res) =>
             let backtestResult = new BacktestResult(stock, rewardToRisk)
             stock.first().executeEachIteration(Direction.RIGHT, stock.length() - 1, (slice) => {
               // Execute backtest if pattern is valid for given slice
-              if (isPatternValid(slice, strategy.strategyConRules)) backtestResult.doBacktest(slice, strategy)
+              if (isPatternValid(slice, strategy)) 
+                backtestResult.doBacktest(slice, strategy)
               return true
             })
             strategyReport.backtestResults.push(backtestResult)
