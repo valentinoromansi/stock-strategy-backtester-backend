@@ -26,7 +26,7 @@ const envFileValidityCheck = () => {
 // Server start here
 console.log(colors.green('Server starting...'))
 envFileValidityCheck()
-const port = process.env.port
+const port = process.env.PORT
 const server = createServer(app)
 server.listen(port)
 console.log(colors.green(`Server started on port ${port}`))
