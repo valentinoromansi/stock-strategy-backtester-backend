@@ -2,7 +2,7 @@
   "name": "stock-strategy-backtester-backend",
   "version": "1.0.0",
   "description": "Neki opis",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "build": "tsc",
     "start": "npm run build && node build/server.js",
