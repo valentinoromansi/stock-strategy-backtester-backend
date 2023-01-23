@@ -38,6 +38,22 @@ app.use(cors())
 
 const apiReceiver: ApiReceiver = new ApiReceiver()
 
+
+
+app.get("/", async (req, res) => {
+  res.send(
+    `
+  <h1>Todo REST API</h1>
+  <h2>Available Routes</h2>
+  <pre>
+    GET, POST /todos
+    GET, PUT, DELETE /todos/:id
+  </pre>
+  `.trim(),
+  );
+});
+
+
 // ! Get stock - change to GEt method or leave POST but rename + validate request -> exception thrown otherwise
 app.post("/get-stock", authenticateAccessToken, async (req: any, res: any) => {
   console.log("/get-stock called...")
