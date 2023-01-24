@@ -30,6 +30,7 @@ function setHeaders(res: any) {
 import { stringify } from "flatted"
 import { authenticateAccessToken, authenticateUserCredentials, AuthentificationCredentials, generateAccessToken } from "./authentification/authentification"
 import { ServiceResponse } from "./types/service-response"
+import { ConditionalRule } from "./strategy/conditional-rule"
 
 export const app = express()
 app.use(express.json())
@@ -41,6 +42,7 @@ const apiReceiver: ApiReceiver = new ApiReceiver()
 // ! Get stock - change to GEt method or leave POST but rename + validate request -> exception thrown otherwise
 app.post("/get-stock", authenticateAccessToken, async (req: any, res: any) => {
   console.log("/get-stock called...")
+  console.time(colors.yellow("/get-stock"))
   setHeaders(res)
   const { interval, symbol } = req.body
   let stock: Stock
@@ -56,15 +58,18 @@ app.post("/get-stock", authenticateAccessToken, async (req: any, res: any) => {
       }
   }
   res.send(new ServiceResponse({data: stock.slicesToObject(), status: 200}))
+  console.timeEnd(colors.yellow("/get-stock"))
   console.log(colors.green(`/get-stock ended...`))
 })
 
 // Update stock data and save it in resources/stocks
 app.post("/update-stock-data", authenticateAccessToken, async (req: any, res: any) => {
   console.log("/update-stock-data called...")
+  console.time(colors.yellow("/update-stock-data"))
   setHeaders(res)
   const status: boolean = await apiReceiver.fetchStockData()
   res.send(new ServiceResponse({status: 200}))
+  console.timeEnd(colors.yellow("/update-stock-data"))
   console.log(colors.green(`/update-stock-data ended...`))
 })
 
@@ -72,34 +77,38 @@ app.post("/update-stock-data", authenticateAccessToken, async (req: any, res: an
 // ? Add validations for req object
 app.post("/save-strategy", authenticateAccessToken, async (req: any, res: any) => {
   console.log("/save-strategy called...")
-  console.log(colors.green(req.body))
+  console.time(colors.yellow("/save-strategy"))
   setHeaders(res)
   let strategy: Strategy = req.body
   if(!strategy.riskToRewardList || strategy.riskToRewardList?.length === 0)
     strategy.riskToRewardList = [1, 2]
   const isSaved: boolean = await saveStrategyJson(strategy)
-  console.log(colors.green(`/save-strategy ended...`))
   res.send(new ServiceResponse({status: 200}))
+  console.timeEnd(colors.yellow("/save-strategy"));
+  console.log(colors.green(`/save-strategy ended...`))
 })
 
 // Reads strategies from resurces/strategies.json, removes strategy with name from request, saves new list in resurces/strategies.json
 // ? Add validations for req object
 app.post("/delete-strategy", authenticateAccessToken, async (req: any, res: any) => {
   console.log("/delete-strategy called...")
-  console.log(colors.green(req.body))
+  console.time(colors.yellow("/delete-strategy"));
   setHeaders(res)
   const isDeleted: boolean = await deleteStrategy(req.body.name)
-  console.log(colors.green(`/delete-strategy ended...`))
   res.send(new ServiceResponse({status: 200}))
+  console.timeEnd(colors.yellow("/delete-strategy"));
+  console.log(colors.green(`/delete-strategy ended...`))
 })
 
 // Fetch strategy from resurces/strategies.json
 app.get("/get-strategies", authenticateAccessToken, async (req: any, res: any) => {
   console.log("/get-strategies called...")
+  console.time(colors.yellow("/get-strategies"));
   setHeaders(res)
   let strategies: Strategy[] = await readStrategiesJsonAndParse()
-  console.log(colors.green(`/get-strategies ended...`))
   res.send(new ServiceResponse({data: strategies, status: 200}))
+  console.timeEnd(colors.yellow("/get-strategies"));
+  console.log(colors.green(`/get-strategies ended...`))
 })
 
 // Do backtest and update strategy reports
@@ -109,6 +118,7 @@ app.get("/get-strategies", authenticateAccessToken, async (req: any, res: any) =
 // ? import { plainToClass, Expose } from "class-transformer";
 app.post("/update-strategy-reports",authenticateAccessToken, async (req, res) => {
   console.log("/update-strategy-reports called...")
+  console.time(colors.yellow("/update-strategy-reports"));
   setHeaders(res)
   console.log("Request: ", req.body)
   let strategies: Strategy[] = await readStrategiesJsonAndParse()
@@ -155,22 +165,26 @@ app.post("/update-strategy-reports",authenticateAccessToken, async (req, res) =>
   // Send back all strategy reports including updated ones
   let newStrategyReports: StrategyReport[] = await readStrategyReportsJsonAndParse()
   res.send(new ServiceResponse({data: newStrategyReports, status: 200}))
+  console.timeEnd(colors.yellow("/update-strategy-reports"));
   console.log(colors.green(`/update-strategy-reports ended...`))
 })
 
 // Save strategy in resurces/strategies.json
 app.get("/get-strategy-reports", authenticateAccessToken, async (req: any, res: any) => {
   console.log("/get-strategy-reports called...")
+  console.time(colors.yellow("/get-strategy-reports"));
   setHeaders(res)
   let strategyReports: StrategyReport[] = await readStrategyReportsJsonAndParse()
-  console.log(colors.green(`/get-strategy-reports ended...`))
   res.send(new ServiceResponse({data: strategyReports, status: 200}))
+  console.timeEnd(colors.yellow("/get-strategy-reports"));
+  console.log(colors.green(`/get-strategy-reports ended...`))
 })
 
 
 // Authenticate user and send access key back
 app.post("/authenticate", async (req: {body: AuthentificationCredentials}, res: any) => {
   console.log(`authenticate called... for user="${req.body.username}"`)
+  console.time(colors.yellow("/authenticate"));
   setHeaders(res)
   const authenticated = authenticateUserCredentials(req.body)
   if(!authenticated) {
@@ -179,5 +193,6 @@ app.post("/authenticate", async (req: {body: AuthentificationCredentials}, res: 
   }
   const token = generateAccessToken(req.body)
   res.send(new ServiceResponse({data: token, status: 200}))
+  console.timeEnd(colors.yellow(`/authenticate`))
   console.log(colors.green(`/authenticate ended...`))
 })
