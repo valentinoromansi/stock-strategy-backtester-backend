@@ -170,11 +170,11 @@ app.get("/get-strategy-reports", authenticateAccessToken, async (req: any, res: 
 
 // Authenticate user and send access key back
 app.post("/authenticate", async (req: {body: AuthentificationCredentials}, res: any) => {
-  console.log(`authenticate called... for user="${req.body.user}"`)
+  console.log(`authenticate called... for user="${req.body.username}"`)
   setHeaders(res)
   const authenticated = authenticateUserCredentials(req.body)
   if(!authenticated) {
-    res.send(new ServiceResponse({message: `Authentification failed for user ${req.body.user}!`, status: 400}))
+    res.send(new ServiceResponse({message: `Authentification failed for user ${req.body.username}!`, status: 400}))
     return
   }
   const token = generateAccessToken(req.body)

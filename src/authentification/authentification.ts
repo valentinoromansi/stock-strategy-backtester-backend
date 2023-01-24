@@ -7,19 +7,19 @@ import { ServiceResponse } from '../types/service-response'
 
 
 export interface AuthentificationCredentials {
-	user: string,
+	username: string,
 	password: string
 }
 
 export function authenticateUserCredentials(requestCredentials: AuthentificationCredentials): boolean {
 	const allowedCredentials: AuthentificationCredentials[] = JSON.parse(process.env.ACCESS_USERS)
 	return allowedCredentials.some(allowedCredential => {
-		return allowedCredential.user === requestCredentials.user && allowedCredential.password === requestCredentials.password
+		return allowedCredential.username === requestCredentials.username && allowedCredential.password === requestCredentials.password
 	})
 }
 
 export function generateAccessToken(credentials: AuthentificationCredentials) {
-	return jwt.sign({user: credentials.user}, process.env.ACCESS_TOKEN_PRIVATE_KEY)
+	return jwt.sign({user: credentials.username}, process.env.ACCESS_TOKEN_PRIVATE_KEY)
 }
 
 // Header.authorization must be in format "Bearer token"
