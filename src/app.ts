@@ -31,6 +31,8 @@ import { stringify } from "flatted"
 import { authenticateAccessToken, authenticateUserCredentials, AuthentificationCredentials, generateAccessToken } from "./authentification/authentification"
 import { ServiceResponse } from "./types/service-response"
 import { ConditionalRule } from "./strategy/conditional-rule"
+import { RequestGetStock, RequestSaveStrategy } from "./types/service-request"
+import { validateGetStockRequest, validateSaveStrategyRequest } from "./request-validation"
 
 export const app = express()
 app.use(express.json())
@@ -39,12 +41,14 @@ app.use(cors())
 
 const apiReceiver: ApiReceiver = new ApiReceiver()
 
-// ! Get stock - change to GEt method or leave POST but rename + validate request -> exception thrown otherwise
-app.post("/get-stock", authenticateAccessToken, async (req: any, res: any) => {
+
+
+app.post("/get-stock", authenticateAccessToken, validateGetStockRequest, async (req: RequestGetStock, res: any) => {
   console.log("/get-stock called...")
   console.time(colors.yellow("/get-stock"))
-  setHeaders(res)
+  setHeaders(res)  
   const { interval, symbol } = req.body
+  //if(interval)
   let stock: Stock
   const fileNames: string[] = fs.readdirSync(`${yml.stocksPath}/${interval}`).map((file: string) => file)
   for (const fileName of fileNames) {
@@ -62,6 +66,8 @@ app.post("/get-stock", authenticateAccessToken, async (req: any, res: any) => {
   console.log(colors.green(`/get-stock ended...`))
 })
 
+
+
 // Update stock data and save it in resources/stocks
 app.post("/update-stock-data", authenticateAccessToken, async (req: any, res: any) => {
   console.log("/update-stock-data called...")
@@ -73,26 +79,19 @@ app.post("/update-stock-data", authenticateAccessToken, async (req: any, res: an
   console.log(colors.green(`/update-stock-data ended...`))
 })
 
+
+
 // Save strategy in resurces/strategies.json
-// ? Add validations for req object
-app.post("/save-strategy", authenticateAccessToken, async (req: any, res: any) => {
+app.post("/save-strategy", authenticateAccessToken, validateSaveStrategyRequest, async (req: RequestSaveStrategy, res: any) => {
   console.log("/save-strategy called...")
   console.time(colors.yellow("/save-strategy"))
   setHeaders(res)
   let strategy: Strategy = req.body
-  var Filter = require('bad-words')
-  if(strategy.name !== new Filter().clean(strategy.name))
-    res.send(new ServiceResponse({status: 400, message: 'Strategy name contains profanities and could not be saved!'}))
-  else {
-    if(!strategy.riskToRewardList || strategy.riskToRewardList?.length === 0)
-      strategy.riskToRewardList = [1, 2]
-    const isReqValid = strategy.name && strategy.enterValueExRule && strategy.stopLossValueExRule && strategy.riskToRewardList
-    if(isReqValid) {
-      await saveStrategyJson(strategy)
-      res.send(new ServiceResponse({status: 200}))
-    }
-  }
-  console.timeEnd(colors.yellow("/save-strategy"));
+  if(!strategy.riskToRewardList || strategy.riskToRewardList?.length === 0)
+    strategy.riskToRewardList = [1, 2]
+  await saveStrategyJson(strategy)
+  res.send(new ServiceResponse({status: 200}))
+  console.timeEnd(colors.yellow("/save-strategy"))
   console.log(colors.green(`/save-strategy ended...`))
 })
 
