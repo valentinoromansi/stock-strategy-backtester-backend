@@ -80,10 +80,18 @@ app.post("/save-strategy", authenticateAccessToken, async (req: any, res: any) =
   console.time(colors.yellow("/save-strategy"))
   setHeaders(res)
   let strategy: Strategy = req.body
-  if(!strategy.riskToRewardList || strategy.riskToRewardList?.length === 0)
-    strategy.riskToRewardList = [1, 2]
-  const isSaved: boolean = await saveStrategyJson(strategy)
-  res.send(new ServiceResponse({status: 200}))
+  var Filter = require('bad-words')
+  if(strategy.name !== new Filter().clean(strategy.name))
+    res.send(new ServiceResponse({status: 400, message: 'Strategy name contains profanities and could not be saved!'}))
+  else {
+    if(!strategy.riskToRewardList || strategy.riskToRewardList?.length === 0)
+      strategy.riskToRewardList = [1, 2]
+    const isReqValid = strategy.name && strategy.enterValueExRule && strategy.stopLossValueExRule && strategy.riskToRewardList
+    if(isReqValid) {
+      await saveStrategyJson(strategy)
+      res.send(new ServiceResponse({status: 200}))
+    }
+  }
   console.timeEnd(colors.yellow("/save-strategy"));
   console.log(colors.green(`/save-strategy ended...`))
 })
