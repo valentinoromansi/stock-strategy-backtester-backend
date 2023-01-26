@@ -32,6 +32,6 @@ export function authenticateAccessToken(req: any, res: any, next: any) {
 	jwt.verify(token, process.env.ACCESS_TOKEN_PRIVATE_KEY, (err: any, obj: any) => {
 	if(err)
 		return res.status(403).send(new ServiceResponse({message: 'Access token verification failed! Access token extracted but verification failed!', status: 403}))
-		next()
+	next()
 	})
 }

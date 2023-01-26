@@ -31,6 +31,8 @@ import { stringify } from "flatted"
 import { authenticateAccessToken, authenticateUserCredentials, AuthentificationCredentials, generateAccessToken } from "./authentification/authentification"
 import { ServiceResponse } from "./types/service-response"
 import { ConditionalRule } from "./strategy/conditional-rule"
+import { RequestAuthenticate, RequestDeleteStrategy, RequestGetStock, RequestSaveStrategy, RequestUpdateStrategyReports } from "./types/service-request"
+import { validateAuthenticateRequest, validateDeleteStrategyRequest, validateGetStockRequest, validateSaveStrategyRequest, validateUpdateStrategyReportsRequest } from "./request-validation"
 
 export const app = express()
 app.use(express.json())
@@ -39,12 +41,14 @@ app.use(cors())
 
 const apiReceiver: ApiReceiver = new ApiReceiver()
 
-// ! Get stock - change to GEt method or leave POST but rename + validate request -> exception thrown otherwise
-app.post("/get-stock", authenticateAccessToken, async (req: any, res: any) => {
+
+
+app.post("/get-stock", authenticateAccessToken, validateGetStockRequest, async (req: RequestGetStock, res: any) => {
   console.log("/get-stock called...")
   console.time(colors.yellow("/get-stock"))
-  setHeaders(res)
+  setHeaders(res)  
   const { interval, symbol } = req.body
+  //if(interval)
   let stock: Stock
   const fileNames: string[] = fs.readdirSync(`${yml.stocksPath}/${interval}`).map((file: string) => file)
   for (const fileName of fileNames) {
@@ -62,6 +66,8 @@ app.post("/get-stock", authenticateAccessToken, async (req: any, res: any) => {
   console.log(colors.green(`/get-stock ended...`))
 })
 
+
+
 // Update stock data and save it in resources/stocks
 app.post("/update-stock-data", authenticateAccessToken, async (req: any, res: any) => {
   console.log("/update-stock-data called...")
@@ -73,37 +79,33 @@ app.post("/update-stock-data", authenticateAccessToken, async (req: any, res: an
   console.log(colors.green(`/update-stock-data ended...`))
 })
 
+
+
 // Save strategy in resurces/strategies.json
-// ? Add validations for req object
-app.post("/save-strategy", authenticateAccessToken, async (req: any, res: any) => {
+app.post("/save-strategy", authenticateAccessToken, validateSaveStrategyRequest, async (req: RequestSaveStrategy, res: any) => {
   console.log("/save-strategy called...")
   console.time(colors.yellow("/save-strategy"))
   setHeaders(res)
   let strategy: Strategy = req.body
-  var Filter = require('bad-words')
-  if(strategy.name !== new Filter().clean(strategy.name))
-    res.send(new ServiceResponse({status: 400, message: 'Strategy name contains profanities and could not be saved!'}))
-  else {
-    if(!strategy.riskToRewardList || strategy.riskToRewardList?.length === 0)
-      strategy.riskToRewardList = [1, 2]
-    const isReqValid = strategy.name && strategy.enterValueExRule && strategy.stopLossValueExRule && strategy.riskToRewardList
-    if(isReqValid) {
-      await saveStrategyJson(strategy)
-      res.send(new ServiceResponse({status: 200}))
-    }
-  }
-  console.timeEnd(colors.yellow("/save-strategy"));
+  if(!strategy.riskToRewardList || strategy.riskToRewardList?.length === 0)
+    strategy.riskToRewardList = [1, 2]
+  await saveStrategyJson(strategy)
+  res.send(new ServiceResponse({status: 200}))
+  console.timeEnd(colors.yellow("/save-strategy"))
   console.log(colors.green(`/save-strategy ended...`))
 })
 
 // Reads strategies from resurces/strategies.json, removes strategy with name from request, saves new list in resurces/strategies.json
 // ? Add validations for req object
-app.post("/delete-strategy", authenticateAccessToken, async (req: any, res: any) => {
+app.post("/delete-strategy", authenticateAccessToken, validateDeleteStrategyRequest, async (req: RequestDeleteStrategy, res: any) => {
   console.log("/delete-strategy called...")
   console.time(colors.yellow("/delete-strategy"));
   setHeaders(res)
   const isDeleted: boolean = await deleteStrategy(req.body.name)
-  res.send(new ServiceResponse({status: 200}))
+  if(isDeleted)
+    res.send(new ServiceResponse({status: 200}))
+  else 
+    res.send(new ServiceResponse({status: 400, message: `Strategy '${req.body.name}' could not be deleted!`}))
   console.timeEnd(colors.yellow("/delete-strategy"));
   console.log(colors.green(`/delete-strategy ended...`))
 })
@@ -119,16 +121,12 @@ app.get("/get-strategies", authenticateAccessToken, async (req: any, res: any) =
   console.log(colors.green(`/get-strategies ended...`))
 })
 
-// Do backtest and update strategy reports
-// If strategyName is in request body then do backtest and update only that strategy report. If not then do it for all.
-// ? Add validations for req object before calling 'Strategy.copy(req.body)'
-// ? import { validate, Matches, IsDefined } from "class-validator";
-// ? import { plainToClass, Expose } from "class-transformer";
-app.post("/update-strategy-reports",authenticateAccessToken, async (req, res) => {
-  console.log("/update-strategy-reports called...")
+// Do backtest and update strategy reports with results
+// If strategyName is provided in request body then generate reports only for that strategy. If not then generate reports for all strategies.
+app.post("/update-strategy-reports", authenticateAccessToken, validateUpdateStrategyReportsRequest, async (req: RequestUpdateStrategyReports, res) => {
+  console.log(`/update-strategy-reports called ${req.body.strategyName ? 'with ' + req.body.strategyName : ''} ...`)
   console.time(colors.yellow("/update-strategy-reports"));
   setHeaders(res)
-  console.log("Request: ", req.body)
   let strategies: Strategy[] = await readStrategiesJsonAndParse()
   if (req?.body?.strategyName !== undefined) 
     strategies = strategies.filter((obj) => obj.name === req.body.strategyName)
@@ -190,7 +188,7 @@ app.get("/get-strategy-reports", authenticateAccessToken, async (req: any, res: 
 
 
 // Authenticate user and send access key back
-app.post("/authenticate", async (req: {body: AuthentificationCredentials}, res: any) => {
+app.post("/authenticate", validateAuthenticateRequest, async (req: RequestAuthenticate, res: any) => {
   console.log(`authenticate called... for user="${req.body.username}"`)
   console.time(colors.yellow("/authenticate"));
   setHeaders(res)
