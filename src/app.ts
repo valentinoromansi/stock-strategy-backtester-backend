@@ -96,7 +96,6 @@ app.post("/save-strategy", authenticateAccessToken, validateSaveStrategyRequest,
 })
 
 // Reads strategies from resurces/strategies.json, removes strategy with name from request, saves new list in resurces/strategies.json
-// ? Add validations for req object
 app.post("/delete-strategy", authenticateAccessToken, validateDeleteStrategyRequest, async (req: RequestDeleteStrategy, res: any) => {
   console.log("/delete-strategy called...")
   console.time(colors.yellow("/delete-strategy"));
