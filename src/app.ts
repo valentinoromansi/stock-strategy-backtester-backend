@@ -31,8 +31,8 @@ import { stringify } from "flatted"
 import { authenticateAccessToken, authenticateUserCredentials, AuthentificationCredentials, generateAccessToken } from "./authentification/authentification"
 import { ServiceResponse } from "./types/service-response"
 import { ConditionalRule } from "./strategy/conditional-rule"
-import { RequestDeleteStrategy, RequestGetStock, RequestSaveStrategy, RequestUpdateStrategyReports } from "./types/service-request"
-import { validateDeleteStrategyRequest, validateGetStockRequest, validateSaveStrategyRequest, validateUpdateStrategyReportsRequest } from "./request-validation"
+import { RequestAuthenticate, RequestDeleteStrategy, RequestGetStock, RequestSaveStrategy, RequestUpdateStrategyReports } from "./types/service-request"
+import { validateAuthenticateRequest, validateDeleteStrategyRequest, validateGetStockRequest, validateSaveStrategyRequest, validateUpdateStrategyReportsRequest } from "./request-validation"
 
 export const app = express()
 app.use(express.json())
@@ -188,7 +188,7 @@ app.get("/get-strategy-reports", authenticateAccessToken, async (req: any, res: 
 
 
 // Authenticate user and send access key back
-app.post("/authenticate", async (req: {body: AuthentificationCredentials}, res: any) => {
+app.post("/authenticate", validateAuthenticateRequest, async (req: RequestAuthenticate, res: any) => {
   console.log(`authenticate called... for user="${req.body.username}"`)
   console.time(colors.yellow("/authenticate"));
   setHeaders(res)

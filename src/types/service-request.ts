@@ -23,3 +23,10 @@ export interface RequestUpdateStrategyReports {
   }
 }
 
+export interface RequestAuthenticate {
+  body: {
+    username: string,
+    password: string
+  }
+}
+

@@ -1,5 +1,5 @@
 import colors from "colors"
-import { RequestDeleteStrategy, RequestGetStock, RequestSaveStrategy, RequestUpdateStrategyReports } from "./types/service-request"
+import { RequestAuthenticate, RequestDeleteStrategy, RequestGetStock, RequestSaveStrategy, RequestUpdateStrategyReports } from "./types/service-request"
 import { ServiceResponse } from "./types/service-response"
 
 export function validateGetStockRequest(req: RequestGetStock, res: any, next: any) {
@@ -63,4 +63,23 @@ export function validateUpdateStrategyReportsRequest(req: RequestUpdateStrategyR
       return res.send(new ServiceResponse({ message: message, status: 400 }))
     }
     next()
+  }
+
+export function validateAuthenticateRequest(req: RequestAuthenticate, res: any, next: any) {
+  const { username, password } = req.body
+  let serviceRes: ServiceResponse
+  if(!username)
+    serviceRes = new ServiceResponse({message: `Username must be defined!`})
+  if(username?.length < 1 || username?.length > 50)
+    serviceRes = new ServiceResponse({message: `Username length must be 1 to 50 letters!`})
+  if(!password)
+    serviceRes = new ServiceResponse({message: `Password must be defined!`})
+  if(password?.length < 6 || password?.length > 50)
+    serviceRes = new ServiceResponse({message: `Password length must be 6 to 50 letters!`})
+  if(serviceRes) {
+    console.log(colors.red(`Validation for /authenticate failed with message='${serviceRes.message}'`))
+    serviceRes.status = 400
+    return res.send(serviceRes)
+  }
+  next()
   }
