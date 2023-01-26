@@ -31,8 +31,8 @@ import { stringify } from "flatted"
 import { authenticateAccessToken, authenticateUserCredentials, AuthentificationCredentials, generateAccessToken } from "./authentification/authentification"
 import { ServiceResponse } from "./types/service-response"
 import { ConditionalRule } from "./strategy/conditional-rule"
-import { RequestDeleteStrategy, RequestGetStock, RequestSaveStrategy } from "./types/service-request"
-import { validateDeleteStrategyRequest, validateGetStockRequest, validateSaveStrategyRequest } from "./request-validation"
+import { RequestDeleteStrategy, RequestGetStock, RequestSaveStrategy, RequestUpdateStrategyReports } from "./types/service-request"
+import { validateDeleteStrategyRequest, validateGetStockRequest, validateSaveStrategyRequest, validateUpdateStrategyReportsRequest } from "./request-validation"
 
 export const app = express()
 app.use(express.json())
@@ -121,16 +121,12 @@ app.get("/get-strategies", authenticateAccessToken, async (req: any, res: any) =
   console.log(colors.green(`/get-strategies ended...`))
 })
 
-// Do backtest and update strategy reports
-// If strategyName is in request body then do backtest and update only that strategy report. If not then do it for all.
-// ? Add validations for req object before calling 'Strategy.copy(req.body)'
-// ? import { validate, Matches, IsDefined } from "class-validator";
-// ? import { plainToClass, Expose } from "class-transformer";
-app.post("/update-strategy-reports",authenticateAccessToken, async (req, res) => {
-  console.log("/update-strategy-reports called...")
+// Do backtest and update strategy reports with results
+// If strategyName is provided in request body then generate reports only for that strategy. If not then generate reports for all strategies.
+app.post("/update-strategy-reports", authenticateAccessToken, validateUpdateStrategyReportsRequest, async (req: RequestUpdateStrategyReports, res) => {
+  console.log(`/update-strategy-reports called ${req.body.strategyName ? 'with ' + req.body.strategyName : ''} ...`)
   console.time(colors.yellow("/update-strategy-reports"));
   setHeaders(res)
-  console.log("Request: ", req.body)
   let strategies: Strategy[] = await readStrategiesJsonAndParse()
   if (req?.body?.strategyName !== undefined) 
     strategies = strategies.filter((obj) => obj.name === req.body.strategyName)

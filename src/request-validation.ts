@@ -1,5 +1,5 @@
 import colors from "colors"
-import { RequestDeleteStrategy, RequestGetStock, RequestSaveStrategy } from "./types/service-request"
+import { RequestDeleteStrategy, RequestGetStock, RequestSaveStrategy, RequestUpdateStrategyReports } from "./types/service-request"
 import { ServiceResponse } from "./types/service-response"
 
 export function validateGetStockRequest(req: RequestGetStock, res: any, next: any) {
@@ -47,13 +47,20 @@ export function validateSaveStrategyRequest(req: RequestSaveStrategy, res: any, 
 
 export function validateDeleteStrategyRequest(req: RequestDeleteStrategy, res: any, next: any) {
     const { name } = req.body
-    let serviceRes: ServiceResponse
-    if(!name)
-      serviceRes = new ServiceResponse({ message: `Strategy name must be defined!` })   
-    if(serviceRes) {
-      console.log(colors.red(`Validation for /delete-strategy failed with message='${serviceRes.message}'`))
-      serviceRes.status = 400
-      return res.send(serviceRes)
+    if(!name) {
+      const message = `Strategy name must be defined!`
+      console.log(colors.red(`Validation for /delete-strategy failed with message='${message}'`))
+      return res.send(new ServiceResponse({ message: message, status: 400 }))   
+    }
+    next()
+  }
+
+export function validateUpdateStrategyReportsRequest(req: RequestUpdateStrategyReports, res: any, next: any) {
+    const { strategyName } = req.body
+    if(strategyName === '') {
+      const message = `Strategy name is sent in request but can't be empty!`
+      console.log(colors.red(`Validation for /update-strategy-reports failed with message='${message}'`))
+      return res.send(new ServiceResponse({ message: message, status: 400 }))
     }
     next()
   }

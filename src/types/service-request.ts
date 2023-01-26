@@ -17,3 +17,9 @@ export interface RequestDeleteStrategy {
   }
 }
 
+export interface RequestUpdateStrategyReports {
+  body: {
+    strategyName?: string
+  }
+}
+
