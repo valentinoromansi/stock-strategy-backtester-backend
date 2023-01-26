@@ -79,7 +79,9 @@ export function saveStrategyJson(strategy: Strategy): Promise<boolean> {
 export function deleteStrategy(strategyName: string): Promise<boolean> {
   return new Promise(async (resolve) => {
     let strategies: Strategy[] = await readStrategiesJsonAndParse()
-    strategies = strategies.filter((obj) => obj.name !== strategyName)
+    if(!strategies.find(s => s.name === strategyName))
+      resolve(false)
+    strategies = strategies.filter(s => s.name !== strategyName)
     const filePath = `${yml.strategiesFilePath}`
     fs.writeFile(filePath, JSON.stringify(strategies), (err: any) => {
       if (err) {

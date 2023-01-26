@@ -11,3 +11,9 @@ export interface RequestSaveStrategy {
   body: Strategy
 }
 
+export interface RequestDeleteStrategy {
+  body: {
+    name: string
+  }
+}
+

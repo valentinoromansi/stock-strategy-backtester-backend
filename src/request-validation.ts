@@ -1,5 +1,5 @@
 import colors from "colors"
-import { RequestGetStock, RequestSaveStrategy } from "./types/service-request"
+import { RequestDeleteStrategy, RequestGetStock, RequestSaveStrategy } from "./types/service-request"
 import { ServiceResponse } from "./types/service-response"
 
 export function validateGetStockRequest(req: RequestGetStock, res: any, next: any) {
@@ -39,6 +39,19 @@ export function validateSaveStrategyRequest(req: RequestSaveStrategy, res: any, 
       serviceRes = new ServiceResponse({ message: `There must be at least 2 rules defined!` })  
     if(serviceRes) {
       console.log(colors.red(`Validation for /save-strategy failed with message='${serviceRes.message}'`))
+      serviceRes.status = 400
+      return res.send(serviceRes)
+    }
+    next()
+  }
+
+export function validateDeleteStrategyRequest(req: RequestDeleteStrategy, res: any, next: any) {
+    const { name } = req.body
+    let serviceRes: ServiceResponse
+    if(!name)
+      serviceRes = new ServiceResponse({ message: `Strategy name must be defined!` })   
+    if(serviceRes) {
+      console.log(colors.red(`Validation for /delete-strategy failed with message='${serviceRes.message}'`))
       serviceRes.status = 400
       return res.send(serviceRes)
     }

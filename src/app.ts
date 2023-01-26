@@ -31,8 +31,8 @@ import { stringify } from "flatted"
 import { authenticateAccessToken, authenticateUserCredentials, AuthentificationCredentials, generateAccessToken } from "./authentification/authentification"
 import { ServiceResponse } from "./types/service-response"
 import { ConditionalRule } from "./strategy/conditional-rule"
-import { RequestGetStock, RequestSaveStrategy } from "./types/service-request"
-import { validateGetStockRequest, validateSaveStrategyRequest } from "./request-validation"
+import { RequestDeleteStrategy, RequestGetStock, RequestSaveStrategy } from "./types/service-request"
+import { validateDeleteStrategyRequest, validateGetStockRequest, validateSaveStrategyRequest } from "./request-validation"
 
 export const app = express()
 app.use(express.json())
@@ -97,12 +97,15 @@ app.post("/save-strategy", authenticateAccessToken, validateSaveStrategyRequest,
 
 // Reads strategies from resurces/strategies.json, removes strategy with name from request, saves new list in resurces/strategies.json
 // ? Add validations for req object
-app.post("/delete-strategy", authenticateAccessToken, async (req: any, res: any) => {
+app.post("/delete-strategy", authenticateAccessToken, validateDeleteStrategyRequest, async (req: RequestDeleteStrategy, res: any) => {
   console.log("/delete-strategy called...")
   console.time(colors.yellow("/delete-strategy"));
   setHeaders(res)
   const isDeleted: boolean = await deleteStrategy(req.body.name)
-  res.send(new ServiceResponse({status: 200}))
+  if(isDeleted)
+    res.send(new ServiceResponse({status: 200}))
+  else 
+    res.send(new ServiceResponse({status: 400, message: `Strategy '${req.body.name}' could not be deleted!`}))
   console.timeEnd(colors.yellow("/delete-strategy"));
   console.log(colors.green(`/delete-strategy ended...`))
 })
