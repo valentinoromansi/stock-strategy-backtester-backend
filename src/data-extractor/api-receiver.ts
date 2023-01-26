@@ -1,21 +1,15 @@
 import { VerticalSlice } from "../stock/vertical-slice"
 import { Stock } from "../stock/stock-data"
 import { Fundamentals } from "../stock/fundamentals"
-import { ApiKeysManager, ApiKey } from "../data-extractor/api-key-manager"
+import { ApiKeysManager } from "../data-extractor/api-key-manager"
 import { waitFor } from "../util"
+import { ApiKey, fundamentalsUrl, intervals, sliceDataUrl, symbolsUrl } from "./api-data"
 
 const https = require("https")
 const fs = require("fs")
 const colors = require("colors")
 
-const symbolsUrl = "https://api.twelvedata.com/stocks?exchange=NASDAQ"
-const sliceDataUrl = (symbol: string, apikey: string, interval: string) =>
-  `https://api.twelvedata.com/time_series?&symbol=${symbol}&interval=${interval}&apikey=${apikey}&outputsize=5000`
-const fundamentalsUrl = (symbol: string, apikey: string) =>
-  `https://www.alphavantage.co/query?function=OVERVIEW&symbol=${symbol}&apikey=${apikey}`
-
 const APICallsPerMin = 5
-const intervals = ["15min", "1h", "1day"]
 
 let apiKeysManager: ApiKeysManager = new ApiKeysManager()
 
