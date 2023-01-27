@@ -48,11 +48,8 @@
 1. Tells if attribute value is SAME/BIGGER/SMALLLER then other attribute value
 ```
 
-</br></br></br></br>
+</br></br></br>
 
-
-![POST](https://img.shields.io/badge/POST-purple?style=flat)
-![GET](https://img.shields.io/badge/GET-blue?style=flat)
 # Endpoints
 
 ## __/authenticate__  ![POST](https://img.shields.io/badge/POST-purple?style=flat)
