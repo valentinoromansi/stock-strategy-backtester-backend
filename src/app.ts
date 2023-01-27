@@ -48,7 +48,6 @@ app.post("/get-stock", authenticateAccessToken, validateGetStockRequest, async (
   console.time(colors.yellow("/get-stock"))
   setHeaders(res)  
   const { interval, symbol } = req.body
-  //if(interval)
   let stock: Stock
   const fileNames: string[] = fs.readdirSync(`${yml.stocksPath}/${interval}`).map((file: string) => file)
   for (const fileName of fileNames) {
@@ -174,7 +173,7 @@ app.post("/update-strategy-reports", authenticateAccessToken, validateUpdateStra
   console.log(colors.green(`/update-strategy-reports ended...`))
 })
 
-// Save strategy in resurces/strategies.json
+// Get strategy reports
 app.get("/get-strategy-reports", authenticateAccessToken, async (req: any, res: any) => {
   console.log("/get-strategy-reports called...")
   console.time(colors.yellow("/get-strategy-reports"));

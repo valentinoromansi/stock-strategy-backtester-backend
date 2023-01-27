@@ -1,0 +1,339 @@
+{
+	"info": {
+		"_postman_id": "a60b62fd-9def-4de8-b92f-e47ff131c4ac",
+		"name": "stock-strategy-backtester-backend",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "/authenticate",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiSXZpY2EiLCJpYXQiOjE2NzQ3Mzk1MTN9.f8kmkDEk4PEOaIW3lKLVI7BhzA9--UX55NJ9pe7KOk8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"Ivica\", \r\n    \"password\": \"majmun\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4000/authenticate",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"authenticate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/update-stock-data",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiSXZpY2EiLCJpYXQiOjE2NzQ2MDM4NjV9.bVJu77FTpffLoa3p5UFHC3tfmIerqhCcFZUQedCIfb4",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4000/update-stock-data",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"update-stock-data"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/get-stock",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiSXZpY2EiLCJpYXQiOjE2NzQ2Nzg2MTZ9.Osk_jjpPe85IBTn0dmKiwGZECMGIwRFuzx_JBz0jTPM",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4000/get-stock",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"get-stock"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/save-strategy",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiSXZpY2EiLCJpYXQiOjE2NzQ1ODU3MDF9.6pp1vnqocqn2LcqnschXttXitjQTeFhLugwOsJJDT4E",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"name\": \"strategy 1\",\r\n\t\"enterValueExRule\": {\r\n\t\t\"id\": 1,\r\n\t\t\"attribute1\": \"OPEN\",\r\n\t\t\"attribute2\": null,\r\n\t\t\"percent\": null,\r\n\t\t\"isRelative\": false\r\n\t},\r\n\t\"stopLossValueExRule\": {\r\n\t\t\"id\": 3,\r\n\t\t\"attribute1\": \"CLOSE\",\r\n\t\t\"attribute2\": null,\r\n\t\t\"percent\": null,\r\n\t\t\"isRelative\": false\r\n\t},\r\n\t\"riskToRewardList\": [\r\n\t\t1,\r\n\t\t2\r\n\t],\r\n\t\"strategyConRules\": [\r\n\t\t{\r\n\t\t\t\"valueExtractionRule1\": {\r\n\t\t\t\t\"id\": 0,\r\n\t\t\t\t\"attribute1\": \"OPEN\",\r\n\t\t\t\t\"isRelative\": false\r\n\t\t\t},\r\n\t\t\t\"position\": \"BELOW\",\r\n\t\t\t\"valueExtractionRule2\": {\r\n\t\t\t\t\"id\": 0,\r\n\t\t\t\t\"attribute1\": \"CLOSE\",\r\n\t\t\t\t\"isRelative\": false\r\n\t\t\t}\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"valueExtractionRule1\": {\r\n\t\t\t\t\"id\": 1,\r\n\t\t\t\t\"attribute1\": \"OPEN\",\r\n\t\t\t\t\"isRelative\": false\r\n\t\t\t},\r\n\t\t\t\"position\": \"BELOW\",\r\n\t\t\t\"valueExtractionRule2\": {\r\n\t\t\t\t\"id\": 1,\r\n\t\t\t\t\"attribute1\": \"LOW\",\r\n\t\t\t\t\"isRelative\": false\r\n\t\t\t}\r\n\t\t}\r\n\t]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4000/save-strategy",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"save-strategy"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/delete-strategy",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiSXZpY2EiLCJpYXQiOjE2NzQ3Mzg1OTR9.Wug6rRpQvxZ3xSR3sagqT1o3qnaoTymMbsD7DmVj_UU",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"strategy 1\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4000/delete-strategy",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"delete-strategy"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/get-strategies",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {},
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiSXZpY2EiLCJpYXQiOjE2NzQ3Mzk1MTN9.f8kmkDEk4PEOaIW3lKLVI7BhzA9--UX55NJ9pe7KOk8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"strategyName\": \"strategy 1\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4000/get-strategies",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"get-strategies"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/update-strategy-reports",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiSXZpY2EiLCJpYXQiOjE2NzQ3Mzk1MTN9.f8kmkDEk4PEOaIW3lKLVI7BhzA9--UX55NJ9pe7KOk8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4000/update-strategy-reports",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"update-strategy-reports"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/get-strategy-reports",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true,
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiSXZpY2EiLCJpYXQiOjE2NzQ2MDM4NjV9.bVJu77FTpffLoa3p5UFHC3tfmIerqhCcFZUQedCIfb4",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiSXZpY2EiLCJpYXQiOjE2NzQ2MDM4NjV9.bVJu77FTpffLoa3p5UFHC3tfmIerqhCcFZUQedCIfb4",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4000/get-strategy-reports",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"get-strategy-reports"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
