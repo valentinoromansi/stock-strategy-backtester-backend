@@ -17,7 +17,7 @@
     - Symbols - `https://api.twelvedata.com/stocks?exchange=NASDAQ`
     - Fundamentals - `https://www.alphavantage.co/query?function=OVERVIEW&symbol=${symbol}&apikey=${apikey}`
     - Vertical slice data - `https://api.twelvedata.com/time_series?&symbol=${symbol}&interval=${interval}&apikey=${apikey}&outputsize=5000`
-  - Check if API keys in [api-data.ts](src\data-extractor\api-data.ts) for fetching slice data and fundamentals are still valid
+  - Check if API keys in [api-data.ts](src/data-extractor/api-data.ts) for fetching slice data and fundamentals are still valid
 
 
 </br></br></br>
